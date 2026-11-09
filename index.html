@@ -275,6 +275,64 @@ CH.push({id:"bevezeto", title:"Így használd", html:`
 <p>A haladásodat a böngésző megjegyzi, a bal oldali listában látod, hány kérdést oldottál már meg helyesen.</p>
 `, quiz:[]});
 
+CH.push({id:"modellezes-alapjai", title:"Modellezés és UML bevezető", html:`
+<h2>Modellezés és UML bevezető</h2>
+<p>A beugró a 09-es bevezető előadásból is kérdezhet elméleti kérdéseket. Ez a fejezet annak a lényegét foglalja össze.</p>
+<h3>Mi a modell?</h3>
+<p>Egy valós vagy hipotetikus világ (a „rendszer”) egy <b>részének egyszerűsített képe</b>, amely a rendszert bizonyos megfontolásokban <b>helyettesíti</b>. Modellezéskor dönteni kell: a világ mely részét modellezzük, mit hanyagolunk el, és hogyan feleltethető meg a modell a világnak. A modelltől elvárjuk, hogy <b>hasznos</b> legyen (helyettesíteni tudja a modellezett dolgot), <b>egyszerűsített</b> (absztrakció, bizonyos dolgokat elhagy) és <b>pragmatikus</b> (adott célra készül, ugyanarról sokféle modell készülhet).</p>
+<div class="tablewrap"><table>
+<tr><th>Tudományos modell</th><th>Mérnöki (tervezési) modell</th></tr>
+<tr><td><b>Deskriptív</b> (leíró): a valóság megértésére készül.</td><td><b>Preskriptív</b> (előíró): tervként, specifikációként szolgál.</td></tr>
+<tr><td>Értéke: mennyire jól írja le a rendszert.</td><td>Értéke: az elkészült rendszer mennyire illeszkedik hozzá.</td></tr>
+<tr><td>Ha nem illeszkedik (Newton és a fekete lyuk): <b>a modell</b> rossz.</td><td>Ha nem illeszkedik (a NYÁK nem felel meg a tervnek): általában <b>a rendszer</b> rossz.</td></tr>
+</table></div>
+<p>A mérnöki gyakorlatban nem egyetlen, mindenre jó modell készül, hanem <b>több modell, különböző nézetekből</b> (épületnél koncepció, makett, statikai, elektromos, fűtési modell).</p>
+<h3>Miért modellezünk?</h3>
+<ul class="tight">
+<li>Aki szoftvert készít, már így is modellez: a forráskód is egyfajta modell, és a fejünkben <b>mentális modellek</b> vannak.</li>
+<li>A modelleket a <b>kommunikáció</b> miatt jegyezzük le: ember → ember, ember → gép, gép → gép, ember → saját maga később (pl. tervezési döntések indokai).</li>
+<li>Modellezési stílusok, egyre precízebben: <b>brainstorming</b> → <b>illusztráció</b> → <b>részletes specifikáció</b> → <b>formális modell</b> (végrehajtható, szimulálható, kódgenerálható).</li>
+</ul>
+<h3>Finomítás és absztrakció</h3>
+<ul class="tight">
+<li><b>Finomítás:</b> a modell gazdagítása részletekkel úgy, hogy az eredeti modell az új <b>absztrakciója maradjon</b> (pl. az alrendszerek együtt ugyanazt teljesítik). Inverze az <b>absztrakció</b>.</li>
+<li><b>Hierarchikus finomítás:</b> „dobozok kibontása”, pl. a backend szétbontása adatbázisra és alkalmazásszerverre.</li>
+<li><b>Halmazfinomítás</b> (adatfinomítás): az értékkészlet pontosítása, pl. jó/rossz helyett gyors/átlagos/lassú/hiányos/veszélyes.</li>
+</ul>
+<h3>Modellezési nyelv</h3>
+<p>Megadja, mik a <b>jól formált</b> (well-formed) modellek. Ehhez kell a <b>szintaxis</b> (milyen szabályok szerint építhető érvényes modell) és a <b>szemantika</b> (mit jelent a modell). Használunk szöveges (pl. TLA+) és grafikus nyelveket is.</p>
+<h3>UML</h3>
+<ul class="tight">
+<li>Szabványos, vizuális, általános célú nyelv szoftverrendszerek leírására. Az <b>OMG</b> (Object Management Group) gondozza.</li>
+<li>Történet: 1997 UML 1.0 (Booch, Jacobson, Rumbaugh módszereinek egyesítése); UML 2.0 közös szemantikai alapokkal; 2017 UML 2.5, egyszerűsített, egyetlen dokumentum; 2011-től precíz szemantika (fUML, PSSM).</li>
+<li><b>Modell ≠ diagram:</b> a nyelv az elemtípusokat adja, ebből épül a modell, és egy diagram a modellnek csak egy nézete.</li>
+<li>Diagramtípusok két csoportban. <b>Struktúra:</b> osztály, objektum, komponens, csomag, telepítési, összetett struktúra, profil. <b>Viselkedés:</b> aktivitás, állapotgép, use case, interakciós (szekvencia, kommunikációs, időzítési, interakciós áttekintő).</li>
+<li>Alapelemek: Element és Relationship (leginkább absztrakt), Package (csoportosítás), MultiplicityElement (alsó és felső korlát), <b>Classifier</b> (példányokat osztályba sorol a Feature-jeik alapján), <b>Generalization</b> (az UML szándékosan nem inheritance-nek hívja, mert az nyelvenként mást jelenthet).</li>
+<li><b>Sztereotípia:</b> « » közötti név, az elemek kiterjesztése; lehet beépített vagy saját, egy profil részeként.</li>
+<li>A specifikációban minden elemnél van absztrakt szintaxis, természetes nyelvű szemantika (Semantics alfejezet) és metamodell-részlet.</li>
+<li>Az UML <b>nem rögzít fejlesztési módszertant</b>: agilis, V-modell, Unified Process mellett is használható, és nem mondja meg, melyik diagramot mikor kell készíteni.</li>
+</ul>
+`, quiz:[
+ {id:"i1", type:"single", q:"Az elkészült nyomtatott áramkör nem felel meg a tervnek. Mérnöki (preskriptív) modell esetén mi általában a következtetés?",
+  opts:["Az elkészült rendszer a hibás, azt kell javítani.","A modell a hibás, mert nem írja le jól a valóságot.","Mindkettő egyformán hibás.","A modellezési nyelv szintaxisa hibás."], ans:0,
+  ex:"A mérnöki modell előíró: a rendszernek kell illeszkednie a tervhez. A tudományos (leíró) modellnél fordított a helyzet. (Ha maga a terv hibás, természetesen azt kell javítani.)"},
+ {id:"i2", type:"rel", s1:"A use case diagram struktúra diagram.", s2:"Az UML diagramtípusai struktúrát és viselkedést leíró csoportba sorolhatók.", ans:1,
+  ex:"A második igaz, de a use case a viselkedést leíró diagramok közé tartozik, ezért az első hamis."},
+ {id:"i3", type:"multi", q:"Melyik állítások igazak?",
+  opts:["A forráskód is tekinthető egyfajta modellnek.","Ugyanarról a rendszerről több különböző modell is készülhet.","Egy modell akkor jó, ha a rendszer minden részletét tartalmazza.","A modellezési nyelv szintaxisa adja meg, mit jelent a modell.","Finomításkor az eredeti modell az új, részletesebb modell absztrakciója marad."], ans:[0,1,4],
+  ex:"A modell lényege az egyszerűsítés, nem kell minden részletet tartalmaznia. A jelentést a szemantika adja, a szintaxis azt, hogy milyen modell építhető."},
+ {id:"i4", type:"single", q:"Melyik szervezet gondozza az UML szabványt?",
+  opts:["OMG (Object Management Group)","W3C","IEEE","Oracle"], ans:0,
+  ex:"Az UML-t az Object Management Group gondozza."},
+ {id:"i5", type:"rel", s1:"Az UML a generalization kifejezést használja az inheritance helyett.", s2:"Az öröklődés különböző programozási nyelvekben mást jelenthet.", ans:3,
+  ex:"Mindkettő igaz, és a második az indok: az UML ezért választja el a fogalmat a konkrét nyelvi megvalósítástól."},
+ {id:"i6", type:"single", q:"Egy változó értékkészletét a korábbi jó/rossz helyett gyors/átlagos/lassú/hiányos/veszélyes értékekre bontjuk. Mi ez?",
+  opts:["Halmazfinomítás (adatfinomítás)","Hierarchikus finomítás","Absztrakció","Sztereotípia alkalmazása"], ans:0,
+  ex:"Az értékkészlet pontosítása halmazfinomítás. A hierarchikus finomítás a dobozok, elemek kibontása."},
+ {id:"i7", type:"rel", s1:"Az UML előírja, milyen sorrendben kell a diagramokat elkészíteni.", s2:"Az UML általános célú modellezési nyelv.", ans:1,
+  ex:"Az UML nem rögzít fejlesztési módszertant, így sorrendet sem ír elő: az első hamis. A második igaz."}
+]});
+
 CH.push({id:"komponensek", title:"Komponensek", html:`
 <h2>Komponensmodellek</h2>
 <p>A komponens a rendszer moduláris, <b>cserélhető</b> része. A belseje rejtett, a környezetével csak jól definiált interfészeken keresztül érintkezik. Ha egy másik komponens ugyanazokat az interfészeket biztosítja és várja el, a helyére tehető.</p>
