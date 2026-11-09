@@ -131,6 +131,12 @@ th{font-weight:700}
 .drill .ex{margin-top:10px; font-size:15px; min-height:24px}
 .cheat td:first-child{width:210px; min-width:170px}
 .cheat td:first-child svg{max-width:200px}
+details.walk{margin-top:12px; border-top:1px dashed var(--line); padding-top:10px}
+details.walk summary{cursor:pointer; font-weight:700; color:var(--blue)}
+details.walk ol{margin:8px 0 0; padding-left:22px}
+details.walk li{margin:5px 0}
+.optlist{margin:4px 0 0; padding-left:22px}
+.optlist li{margin:3px 0}
 .spec{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--graphite); padding:10px 14px; margin:10px 0 16px; border-radius:0 4px 4px 0}
 @media (max-width:860px){
   .wrap{grid-template-columns:1fr; gap:14px; padding-top:16px}
@@ -436,6 +442,7 @@ ${fig(svg(700,130, B(30,20,230,"fe : Hallgato",['nev = "Figy Elek"','neptun = "A
  <li>Az asszociációk multiplicitásai (minimum és maximum) be vannak tartva.</li>
 </ul></div>
 <div class="trap"><b>Csapda:</b> egy <b>hiányzó</b> slot nem hiba. A példányleírás lehet részleges, nem kell minden attribútum értékét megadni. Egy <b>idegen</b> slot viszont hiba. A hiányzó <b>link</b> viszont hiba, ha egy multiplicitás alsó határa miatt kötelező lenne.</div>
+<div class="key"><b>Saját rajznál más a szokás.</b> Ha te készítesz példánymodellt (kiválóan megfelelt, vizsga III. rész), a tárgy példatára azt kéri, hogy minden saját és örökölt attribútumhoz legyen slot (az érték elhagyható, ha a feladat nem adja meg), és minden nem nulla alsó határhoz vedd fel a szükséges példányokat és linkeket. Kvízben a hiányzó slot önmagában nem teszi érvénytelenné a modellt.</div>
 <p>A példánymodell rajzolása arra is jó, hogy egy osztálymodellt megérts, és kérdéseket fogalmazz meg vele kapcsolatban. Ez a kiválóan megfelelt feladatoknál is hasznos lesz.</p>
 `, quiz:[
  {id:"p1", type:"multi", q:"Osztálymodell: Kurzus 1 ◆—— 0..* Fazis 1 ◆—— 1..* Feladat. Melyik hibák vannak a lenti példánymodellben?",
@@ -595,7 +602,7 @@ CH.push({id:"osszefoglalo", title:"Összefoglaló (puska)", html:`
 <ul class="tight">
  <li>Aláhúzott <code>név : Típus</code>, mindkettő elhagyható. A link sima vonal, kompozíciónál is.</li>
  <li>Érvényesség: csak a típusban (vagy őseiben) lévő slot, csak asszociációval összekötött osztályok példányai között link, a multiplicitások minimuma és maximuma betartva, a típusok kényszerei teljesülnek.</li>
- <li>A hiányzó slot nem hiba (a leírás részleges lehet), az idegen slot hiba. A hiányzó link akkor hiba, ha az alsó határ megkövetelné.</li>
+ <li>Kvízben a hiányzó slot nem hiba (a leírás részleges lehet), az idegen slot hiba. A hiányzó link akkor hiba, ha az alsó határ megkövetelné. Saját rajznál minden (örökölt) attribútumhoz írj slotot.</li>
  <li>Absztrakt osztálynak nincs közvetlen példánya, a leszármazottjénak van.</li>
 </ul>
 
@@ -606,6 +613,17 @@ CH.push({id:"osszefoglalo", title:"Összefoglaló (puska)", html:`
  <li>A kompozíció tulajdonosa az, akit a leírás szerint a részek nem élnek túl („létrehozza és nyilvántartja”).</li>
  <li>Ami a leírásban „különálló komponens”, az nem lehet belső rész.</li>
  <li>Kódnál különítsd el: a kód <i>ellentmond</i> a modellnek, vagy csak <i>nem kényszeríti ki</i>.</li>
+ <li>Kódból komponensdiagram: <code>implements X</code> → biztosított interfész (nyalóka), egy <code>X</code> típusú mező → elvárt interfész (foglalat).</li>
+ <li>„Mely komponenseket kell megváltoztatni, ha az X interfész új verziója jön?” Mindenkit, aki biztosítja vagy használja, és azt a befoglaló komponenst is, amelyik a portján keresztül kifelé delegálja.</li>
+</ul>
+
+<h3>Ellenpélda-példánymodell (kiválóan megfelelt, vizsga)</h3>
+<ul class="tight">
+ <li>Tipikus feladat: olyan példánymodell, amely megfelel a fogalmi modellnek, de megsért egy új követelményt.</li>
+ <li>InstanceSpecification-ök (aláhúzott <code>név : Típus</code>) és linkek, sehol nincs multiplicitás vagy rombusz. Ha egy példányhoz kettő tartozik, mindkettőt külön fel kell rajzolni.</li>
+ <li>Minden nem nulla alsó határhoz vedd fel a szükséges példányokat, és minden attribútumhoz legyen slot.</li>
+ <li>Legyen minimális: csak annyi elem, amennyi a megsértéshez és a multiplicitásokhoz kell.</li>
+ <li>Ha egy követelmény multiplicitással nem fejezhető ki, akkor struktúrával (külön alosztályok, <code>{redefines}</code>, asszociáció a speciális osztályokhoz) vagy kényszerrel lehet.</li>
 </ul>
 
 <h3>Relációanalízis menete</h3>
@@ -648,6 +666,76 @@ CH.push({id:"jeloles-gyakorlo", title:"Jelölés-gyakorló", html:`
 <div class="drill" id="drill"></div>
 `, quiz:[]});
 
+const cubeDiagram = svg(760,390,
+  B(20,20,200,"Constellation",["codeName : String","launchDate : Date"])+
+  B(300,20,170,"Satellite",[],{it:true})+
+  L(220,40,300,40,{s:"mDF"})+M(228,33,"1")+M(292,33,"1..*","","end")+
+  B(240,140,150,"CubeSat",["unitCount : Integer"])+B(420,140,120,"SmallSat",[],{nb:true})+
+  L(315,140,360,56,{e:"mTri"})+L(480,140,420,56,{e:"mTri"})+
+  B(580,20,170,"Sensor",["manufacturer : String","weight : Real"])+
+  L(470,38,580,38,{s:"mDH",e:"mOpen"})+M(572,31,"0..*","","end")+
+  B(20,180,200,"CommSubsystem",["macAddress : String"])+
+  L(300,52,170,180,{s:"mDF"})+M(286,74,"1","","end")+M(178,168,"1..2")+
+  B(20,300,200,"Antenna",["frequency : Real"],{it:true})+
+  L(120,231,120,300,{s:"mDF"})+M(128,252,"1")+M(128,294,"1")+
+  B(300,300,140,"UHFAntenna",[],{nb:true})+B(300,345,140,"KaAntenna",[],{nb:true})+
+  L(300,313,220,320,{e:"mTri"})+L(300,358,220,336,{e:"mTri"})
+);
+
+CH.push({id:"kidolgozott-beugro", title:"Kidolgozott beugró", html:`
+<h2>Kidolgozott beugró</h2>
+<p>A példatár CubeSat feladatának (4.2.1) modelljére épül, beugró formában: egy diagram, négy kérdés. Előbb próbáld meg magad, a „Megoldás menete” részt csak utána nyisd ki.</p>
+<div class="key"><b>Módszer minden kérdésnél.</b> 1) Mit kérdez pontosan: melyik két osztály, melyik irányból? 2) Keresd meg a diagramon az érintett vonalat vagy elemet. 3) Olvasd le a jelölést: szám a <b>túloldalon</b>, teli vagy üres rombusz, nyíl vagy X, háromszög, dőlt név. 4) Nézd meg az öröklést: a leszármazott megkapja az ős kapcsolatait. 5) Csak ezután dönts.</div>
+${fig(cubeDiagram)}
+
+<div class="q"><div class="qn">1. kérdés, relációanalízis</div>
+<ul class="stmts"><li><b>1.</b> Ha egy műholdat törlünk, a szenzorai is törlődnek.</li><li class="mert">mert</li><li><b>2.</b> A Satellite és a Sensor között aggregáció van.</li></ul>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>Első fele.</b> Keresd meg a Satellite–Sensor vonalat. A Satellite oldalán <b>üres</b> rombusz van: megosztott aggregáció. Együtt törlődés csak kompozíciónál (teli rombusz) következik. (A példatár szövege is kimondja, hogy a szenzorok megmaradnak.) Ezért az első fele <b>hamis</b>.</li>
+<li><b>Második fele.</b> Az üres rombusz is aggregáció, csak megosztott. Ezért <b>igaz</b>.</li>
+<li><b>Döntés.</b> Első hamis, második igaz: <b>B (− +)</b>. A „mert”-et itt már nem kell vizsgálni.</li>
+<li><b>Csapda:</b> az „aggregáció” szót sokan kompozíciónak olvassák. Mindig nézd meg, teli vagy üres a rombusz.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">2. kérdés, all-or-nothing</div>
+<div class="qt">Melyik állítások igazak?</div>
+<ol class="optlist" type="a">
+<li>Egy CubeSat példányhoz 1 vagy 2 CommSubsystem tartozik.</li>
+<li>Egy Satellite példányból hatékonyan elérhetők a szenzorai.</li>
+<li>Egy szenzor legfeljebb egy műholdhoz tartozhat.</li>
+<li>Az Antenna osztálynak lehet közvetlen példánya.</li>
+<li>Minden konstellációban legalább egy műhold van.</li>
+</ol>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>a)</b> CubeSat és CommSubsystem között nincs közvetlen vonal. De a CubeSat a Satellite leszármazottja (üres háromszög), így örökli a Satellite–CommSubsystem asszociációt. A CommSubsystem felőli végen 1..2 áll. <b>Igaz.</b></li>
+<li><b>b)</b> A Satellite–Sensor vonal Sensor felőli végén nyílhegy van: navigálható. <b>Igaz.</b></li>
+<li><b>c)</b> Azt, hogy egy szenzorhoz hány műhold tartozik, a <b>Satellite</b> felőli vég adná meg. Ott nincs szám, ezért erre nem következtethetünk. <b>Nem jelöljük.</b></li>
+<li><b>d)</b> Az Antenna neve dőlt: absztrakt, nincs közvetlen példánya. <b>Hamis.</b></li>
+<li><b>e)</b> Constellation–Satellite vonal, a Satellite felőli végen 1..*. <b>Igaz.</b></li>
+<li><b>Döntés:</b> a, b, e. <b>Csapda:</b> a c) opció. A hiányzó multiplicitás nem jelent 1-et.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">3. kérdés, feleletválasztós</div>
+<div class="qt">A modell szerint legfeljebb hány antennája lehet egy műholdnak?</div>
+<ol class="optlist" type="a"><li>1</li><li>2</li><li>Korlátlan sok</li><li>A diagramból nem állapítható meg, mert nincs közvetlen kapcsolat</li></ol>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li>Nincs közvetlen Satellite–Antenna vonal, ezért láncban kell gondolkodni.</li>
+<li><b>Satellite → CommSubsystem:</b> a túloldali (CommSubsystem felőli) szám 1..2, tehát legfeljebb 2 kommunikációs alrendszer.</li>
+<li><b>CommSubsystem → Antenna:</b> a túloldali (Antenna felőli) szám 1, tehát mindegyiknek pontosan egy antennája van.</li>
+<li>A kompozíció miatt egy antenna nem tartozhat két alrendszerhez, nem lehet közös. Így legfeljebb 2 · 1 = <b>2</b>, vagyis a <b>b)</b>.</li>
+<li><b>Csapda:</b> csak az egyik vonalat nézni („1”), vagy feladni, mert nincs közvetlen vonal.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">4. kérdés, relációanalízis</div>
+<ul class="stmts"><li><b>1.</b> Egy CubeSat példány kapcsolódhat CommSubsystem példányhoz.</li><li class="mert">mert</li><li><b>2.</b> A CubeSat a Satellite leszármazottja.</li></ul>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>Első fele.</b> Az a) opciónál láttuk: az öröklés miatt kapcsolódhat. <b>Igaz.</b></li>
+<li><b>Második fele.</b> Üres háromszög a Satellite-nál. <b>Igaz.</b></li>
+<li><b>A „mert”.</b> Próbáld ki gondolatban: ha a CubeSat nem lenne leszármazott, nem lenne vonal közte és a CommSubsystem között, és nem kapcsolódhatna. Tehát tényleg ez az ok: <b>D (+ + +)</b>.</li>
+<li><b>Ellenpróba a C-hez:</b> akkor C, ha mindkét fele igaz, de az indok másról szól. Ezt mindig az ilyen „mi lenne nélküle” kérdéssel döntsd el.</li>
+</ol></details></div>
+`, quiz:[]});
+
 CH.push({id:"proba-beugro", title:"Próba beugró (osztály)", html:`
 <h2>Próba beugró</h2>
 <p>Mint az éles beugróban: 4 kérdés, mind ugyanarra a diagramra vonatkozik, és a diagram minden kérdésnél megismétlődik. Próbáld segédanyag nélkül.</p>
@@ -669,7 +757,7 @@ CH.push({id:"proba-beugro", title:"Próba beugró (osztály)", html:`
     L(220,45,300,45)+L(480,45,560,45)+L(390,71,390,140))),
   q:"A második ábra egy példánymodell az első osztálymodellhez. Melyek a hibái?",
   opts:["A t1-nek van email slotja, pedig sem a Tag, sem a Szemely nem definiál ilyet.","A kv2-nek nincs egyetlen Példánya sem.","A t1-nek nincs aktivKolcsonzes slotja.","A t1 típusa Tag, pedig a Szemely absztrakt.","A p1 kapcsolódik a k1 Könyvtárhoz."], ans:[0,1],
-  ex:"Idegen slot (email) hiba, és a kv2 sérti a Példány felőli 1..* alsó határt. A hiányzó slot nem hiba, mert a példányleírás lehet részleges. Az absztrakt ős leszármazottjának lehet példánya. A p1–k1 link kötelező is, a Könyvtár felőli 1 miatt."}
+  ex:"Idegen slot (email) hiba, és a kv2 sérti a Példány felőli 1..* alsó határt. A hiányzó slot kvízben nem hiba, mert a példányleírás lehet részleges (saját rajznál viszont írj minden attribútumhoz slotot). Az absztrakt ős leszármazottjának lehet példánya. A p1–k1 link kötelező is, a Könyvtár felőli 1 miatt."}
 ]});
 
 const shopDiagram = svg(800,330,
@@ -929,7 +1017,7 @@ function show(id){
   h+=`<div class="pager">${prev?`<a class="btn ghost" href="#${prev.id}" style="text-decoration:none">Előző: ${prev.title}</a>`:'<span></span>'}${next?`<a class="btn" href="#${next.id}" style="text-decoration:none">Következő: ${next.title}</a>`:''}</div>`;
   const content=document.getElementById("content");
   content.innerHTML=h;
-  content.querySelectorAll(".q").forEach(el=>{ const q=c.quiz.find(x=>x.id===el.dataset.id); bindQ(el,q); });
+  content.querySelectorAll(".q[data-id]").forEach(el=>{ const q=c.quiz.find(x=>x.id===el.dataset.id); if(q) bindQ(el,q); });
   // tokens
   const exp=document.getElementById("tokexp");
   content.querySelectorAll(".tok").forEach(t=>t.addEventListener("click",()=>{
