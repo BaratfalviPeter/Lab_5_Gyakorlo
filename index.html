@@ -770,6 +770,103 @@ const shopDiagram = svg(800,330,
   PORT(640,220)+L(647,220,693,220)+PORT(700,220)+L(707,220,725,220)+SOCK(737,220,false)+T(737,198,"Warehouse",{a:'middle'})
 );
 
+const videoDiagram = svg(960,330,
+  COMP(20,70,150,60,"PlayerApp")+PORT(170,100)+L(177,100,188,100)+SOCK(200,100,false)+L(212,100,260,100,{d:true,e:"mOpen"})+BALL(270,100)+L(278,100,293,100)+T(270,80,"IPlayback",{a:'middle'})+T(236,120,"«use»",{c:'st',a:'middle'})+
+  `<rect class="bx" x="300" y="20" width="400" height="290"/>`+L(300,52,700,52)+T(500,41,"«component» VideoPlatform",{c:'nm',a:'middle'})+
+  `<rect class="bx" x="450" y="75" width="190" height="50"/>`+T(545,105,":PlaybackManager",{c:'nm',a:'middle'})+
+  `<rect class="bx" x="450" y="195" width="190" height="50"/>`+T(545,225,":LicenseChecker",{c:'nm',a:'middle'})+
+  PORT(300,100)+L(307,100,412,100)+BALL(420,100)+L(428,100,443,100)+PORT(450,100)+
+  PORT(545,125)+L(545,132,545,150)+`<path class="ln" d="M533,162 A12,12 0 0 1 557,162"/>`+BALL(545,162)+L(545,170,545,188)+PORT(545,195)+T(528,166,"ILicense",{a:'end'})+
+  PORT(640,220)+L(647,220,693,220)+PORT(700,220)+L(707,220,725,220)+SOCK(737,220,false)+BALL(737,220)+L(745,220,773,220)+T(737,198,"IRightsDb",{a:'middle'})+
+  COMP(780,190,170,60,"RightsDatabase")+PORT(780,220)
+);
+
+CH.push({id:"kidolgozott-komponens", title:"Kidolgozott beugró (komponens)", html:`
+<h2>Kidolgozott beugró: komponensdiagram</h2>
+<p>A komponensdiagramot nem kell „látni”, csak végig kell olvasni egy fix sorrendben. Előbb a jelek, utána a módszer, végül egy diagram négy kérdéssel, lépésenkénti megoldással.</p>
+
+<h3>1. A jelek, egyszerűen</h3>
+<div class="tablewrap"><table class="cheat">
+<tr><th>Jel</th><th>Jelentés</th></tr>
+<tr><td>${mini(L(10,20,150,20)+BALL(158,20))}</td><td><b>Gömb (nyalóka):</b> ez egy szolgáltatás. Akihez a vonal köti, az <b>adja</b>, vagyis <b>biztosítja</b> az interfészt.</td></tr>
+<tr><td>${mini(L(10,20,146,20)+SOCK(158,20,false))}</td><td><b>Félkör (foglalat):</b> képzeld el úgy, mint egy tenyeret, amely megfogja a gömböt. Akihez a vonal köti, az <b>használja</b>, vagyis <b>elvárja</b> az interfészt.</td></tr>
+<tr><td>${mini(L(10,20,88,20)+BALL(100,20)+SOCK(100,20,true)+L(112,20,190,20))}</td><td><b>Gömb a félkörben:</b> az egyik oldal adja, a másik használja. A vonalat kövesd a szimbólumtól a dobozig: akinek az oldalán a gömb van, az biztosítja, akinél a félkör, az elvárja.</td></tr>
+<tr><td>${mini(`<rect class="bx" x="60" y="4" width="130" height="32"/>`+PORT(60,20))}</td><td><b>Port (kis négyzet):</b> csak egy csatlakozási pont a doboz szélén. <b>Önmagában nem mond irányt</b>, mindig a hozzá kapcsolt gömb vagy félkör dönt.</td></tr>
+<tr><td>${mini(L(10,20,185,20,{d:true,e:"mOpen"})+T(97,12,"«use»",{c:'st',a:'middle'}))}</td><td><b>Szaggatott nyíl «use»:</b> használati függőség. Itt egy külső komponens félköréből mutat egy másik komponens gömbje felé: „azt használom”.</td></tr>
+</table></div>
+<div class="key"><b>Háromféle vonal köti össze a dolgokat, és csak az dönti el, melyik, hogy <i>mit köt össze</i>:</b>
+<ul class="tight" style="margin-top:6px">
+<li>két <b>különálló</b> komponens között szaggatott «use» nyíl: <b>használati függőség</b>;</li>
+<li>a nagy doboz <b>külső portja</b> és egy <b>belső rész</b> között: <b>delegáció</b> (a nagy komponens továbbadja a kérést befelé, vagy a belső rész igényét kiviszi);</li>
+<li>két <b>belső rész</b> között gömb a félkörben: <b>assembly</b>.</li>
+</ul></div>
+
+<h3>2. A módszer</h3>
+<ol class="optlist">
+<li><b>Dobozok.</b> Mi van kint (különálló komponensek), és mi van a nagy doboz belsejében (részek, kettősponttal: <code>:PlaybackManager</code>)?</li>
+<li><b>Minden interfésznevet egyesével.</b> Keresd meg a szimbólumát, és nézd meg, melyik oldalon a gömb, melyiken a félkör. Írd fel magának: „X adja, Y használja”.</li>
+<li><b>A nagy komponensről</b> csak azt mondhatod, hogy biztosít vagy elvár valamit, amit a <b>portján kifelé</b> látsz.</li>
+<li><b>Vonaltípus</b> a fenti három szabály szerint: mit köt össze?</li>
+<li><b>Relációanalízisnél</b> a „mert” szinte mindig akkor hamis, ha az indok egy <i>másik</i> vonalról szól. Az, hogy valaki biztosít valamit, a <b>saját gömbjéből</b> következik, nem abból, hogy valaki használja.</li>
+</ol>
+
+<h3>3. A diagram</h3>
+${fig(videoDiagram)}
+<p>Csináld meg a 2. lépést, mielőtt a kérdéseket nézed: írd le mind a három interfészre (IPlayback, ILicense, IRightsDb), ki adja és ki használja.</p>
+<details class="walk"><summary>Ellenőrzés: ki adja, ki használja?</summary><ol>
+<li><b>IPlayback:</b> a PlayerApp portján félkör van, tehát használja. A VideoPlatform bal portján gömb, tehát a VideoPlatform adja. Belül a gömb a :PlaybackManager előtt van: ő valósítja meg.</li>
+<li><b>ILicense:</b> a félkör felül, a :PlaybackManager felől van, tehát ő használja. A gömb alul, a :LicenseChecker felől, tehát ő adja.</li>
+<li><b>IRightsDb:</b> a félkör a VideoPlatform jobb portja felől van, tehát a VideoPlatform használja (belülről a :LicenseChecker igényét viszi ki). A gömb a RightsDatabase felől van, tehát ő adja.</li>
+</ol></details>
+
+<h3>4. Kérdések lépésenkénti megoldással</h3>
+<div class="q"><div class="qn">1. kérdés, feleletválasztós</div>
+<div class="qt">Milyen összeköttetés van a VideoPlatform bal oldali portja és a :PlaybackManager rész között?</div>
+<ol class="optlist" type="a"><li>Asszociáció</li><li>Használati («use») függőség</li><li>Assembly összeköttetés</li><li>Delegációs összeköttetés</li></ol>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li>Mit köt össze a vonal? Az egyik vége a nagy doboz <b>külső portja</b>, a másik egy <b>belső rész</b>.</li>
+<li>Külső port és belső rész között mindig <b>delegáció</b> van: <b>d)</b>.</li>
+<li><b>Csapda:</b> a vonalon van egy gömb, ezért sokan assemblyt jelölnek. De assembly csak <i>két belső rész</i> között lehet. A gömb itt csak azt mutatja, hogy a delegált interfészt a :PlaybackManager biztosítja.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">2. kérdés, relációanalízis</div>
+<ul class="stmts"><li><b>1.</b> A :LicenseChecker elvárja az ILicense interfészt.</li><li class="mert">mert</li><li><b>2.</b> A :PlaybackManager és a :LicenseChecker között assembly összeköttetés van.</li></ul>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>Első fele.</b> Az ILicense-nél a gömb a :LicenseChecker oldalán van, a félkör a :PlaybackManager-én. Tehát a :LicenseChecker <b>biztosítja</b>, nem elvárja. <b>Hamis.</b></li>
+<li><b>Második fele.</b> Két belső rész között gömb a félkörben: assembly. <b>Igaz.</b></li>
+<li><b>Döntés:</b> <b>B (− +)</b>.</li>
+<li><b>Csapda:</b> megfordítani, ki adja és ki használja. Ezért kell a 2. lépést mindig felírni.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">3. kérdés, all-or-nothing</div>
+<div class="qt">Melyik állítások igazak?</div>
+<ol class="optlist" type="a">
+<li>A PlayerApp elvárja az IPlayback interfészt.</li>
+<li>A VideoPlatform biztosítja az IPlayback interfészt.</li>
+<li>A PlayerApp közvetlenül a :PlaybackManager részhez kapcsolódik.</li>
+<li>A VideoPlatform biztosítja az IRightsDb interfészt.</li>
+<li>A RightsDatabase biztosítja az IRightsDb interfészt.</li>
+</ol>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>a)</b> A PlayerApp portján félkör van. <b>Igaz.</b></li>
+<li><b>b)</b> A VideoPlatform bal portján kifelé gömb van. <b>Igaz.</b></li>
+<li><b>c)</b> A PlayerApp vonala a VideoPlatform <b>portjánál</b> ér véget. Belül a nagy komponens delegálja tovább, de a külső komponens a belső részt nem látja. <b>Hamis.</b></li>
+<li><b>d)</b> Az IRightsDb-nél a VideoPlatform oldalán félkör van: elvárja, nem biztosítja. <b>Hamis.</b></li>
+<li><b>e)</b> A gömb a RightsDatabase oldalán van. <b>Igaz.</b></li>
+<li><b>Döntés:</b> a, b, e.</li>
+</ol></details></div>
+
+<div class="q"><div class="qn">4. kérdés, relációanalízis (ez volt az éles beugró kedvenc csapdája)</div>
+<ul class="stmts"><li><b>1.</b> A VideoPlatform biztosítja az IPlayback interfészt.</li><li class="mert">mert</li><li><b>2.</b> A PlayerApp «use» függőséggel kapcsolódik az IPlayback interfészhez.</li></ul>
+<details class="walk"><summary>Megoldás menete</summary><ol>
+<li><b>Első fele.</b> A bal porton kifelé gömb. <b>Igaz.</b></li>
+<li><b>Második fele.</b> Szaggatott nyíl «use» címkével a PlayerApp-tól az IPlayback gömbje felé. <b>Igaz.</b></li>
+<li><b>A „mert”.</b> Kérdezd meg: ha a PlayerApp nem lenne ott, a VideoPlatform továbbra is biztosítaná az IPlayback-et? Igen, mert a gömb az övé. Tehát nem attól biztosítja, hogy valaki használja. A következtetés hamis: <b>C (+ + −)</b>.</li>
+<li><b>Szabály:</b> „biztosítja, mert valaki használja” és „elvárja, mert valaki biztosítja” mindig C, ha mindkét fele igaz.</li>
+</ol></details></div>
+<p>Ha ez megvan, csináld újra a következő fejezet komponenses próbáját ugyanezzel a módszerrel.</p>
+`, quiz:[]});
+
 CH.push({id:"proba-beugro-2", title:"Próba beugró (komponens)", html:`
 <h2>Próba beugró: komponensdiagram</h2>
 <p>Az éles beugrók egy része komponensdiagramra kérdez: belső felépítés, portok, «use» függőség, delegáció és assembly. Ez a sor ugyanebben a stílusban készült, de más diagrammal.</p>
