@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LAB5 gyakorló: UML struktúra modellek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f8fb; --grid:#e4eaf2; --card:#ffffff; --ink:#17203a; --graphite:#5a6476;
+  --blue:#1d4ed8; --red:#b91c2c; --green:#17784a; --hi:#fff3b0; --line:#cfd8e4;
+  --font:"Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono:ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111a27; --grid:#1a2536; --card:#172234; --ink:#e7ecf4; --graphite:#9aa6b8;
+    --blue:#82a8ff; --red:#ff8a8a; --green:#62d39c; --hi:#4a4220; --line:#2b3a50;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111a27; --grid:#1a2536; --card:#172234; --ink:#e7ecf4; --graphite:#9aa6b8;
+  --blue:#82a8ff; --red:#ff8a8a; --green:#62d39c; --hi:#4a4220; --line:#2b3a50;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0; background-color:var(--paper); color:var(--ink); font-family:var(--font);
+  font-size:17px; line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+a{color:var(--blue)}
+.wrap{display:grid; grid-template-columns:260px minmax(0,1fr); gap:32px; max-width:1180px; margin:0 auto; padding:28px 20px 60px}
+nav{position:sticky; top:calc(16px + env(safe-area-inset-top,0px)); align-self:start}
+nav ol{list-style:none; margin:0; padding:0; counter-reset:ch}
+nav li{counter-increment:ch}
+nav a{display:flex; gap:10px; align-items:baseline; padding:7px 10px; border-radius:6px; text-decoration:none; color:var(--ink); font-size:15px; line-height:1.3}
+nav a::before{content:counter(ch); color:var(--graphite); font-size:13px; min-width:16px}
+nav a:hover{background:var(--card)}
+nav a[aria-current="page"]{background:var(--card); box-shadow:inset 3px 0 0 var(--blue)}
+nav .cnt{margin-left:auto; font-size:12px; color:var(--graphite); white-space:nowrap}
+nav .cnt.done{color:var(--green); font-weight:700}
+nav .tools{margin-top:14px; padding-left:10px}
+button{font:inherit}
+.linkbtn{background:none; border:none; color:var(--graphite); text-decoration:underline; cursor:pointer; padding:0; font-size:14px}
+main{max-width:780px; min-width:0}
+.hero{background:var(--card); border:1.6px solid var(--ink); margin:0 0 28px; max-width:560px}
+.hero .hd{border-bottom:1.6px solid var(--ink); padding:12px 18px 14px; text-align:center}
+.hero .stp{color:var(--graphite); font-size:14px}
+.hero h1{margin:2px 0 0; font-size:30px; line-height:1.15; letter-spacing:-0.01em}
+.hero .cmp{padding:10px 18px; font-family:var(--mono); font-size:14px; line-height:1.7}
+.hero .cmp + .cmp{border-top:1.6px solid var(--ink)}
+h2{font-size:26px; line-height:1.2; margin:0 0 14px}
+h3{font-size:19px; margin:28px 0 8px}
+p{margin:0 0 12px}
+ul.tight{margin:0 0 12px; padding-left:22px}
+ul.tight li{margin:3px 0}
+.fig{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:10px; margin:10px 0 16px; overflow-x:auto}
+.fig .cap{font-size:14px; color:var(--graphite); margin-top:6px}
+.dg{display:block; width:100%; height:auto; min-width:520px}
+.dg.sm{min-width:0}
+.dg .bx{fill:var(--card); stroke:var(--ink); stroke-width:1.4}
+.dg .ln{stroke:var(--ink); stroke-width:1.4; fill:none}
+.dg .ds{stroke-dasharray:6 4}
+.dg text{fill:var(--ink); font-family:var(--font); font-size:13px}
+.dg .nm{font-weight:700}
+.dg .it{font-style:italic}
+.dg .ul{text-decoration:underline}
+.dg .st{font-size:11px; fill:var(--graphite)}
+.dg .ml{fill:var(--blue); font-weight:700}
+.dg .nt{fill:var(--graphite); font-size:12px}
+.dg .ml.hl{fill:var(--red); font-size:17px}
+.dg .dot{fill:var(--ink)}
+.trap{border-left:4px solid var(--red); background:var(--card); padding:10px 14px; margin:14px 0; border-radius:0 4px 4px 0}
+.trap b:first-child{color:var(--red)}
+.key{border-left:4px solid var(--blue); background:var(--card); padding:10px 14px; margin:14px 0; border-radius:0 4px 4px 0}
+code,.mono{font-family:var(--mono); font-size:.9em}
+pre{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:12px 14px; overflow-x:auto; font-family:var(--mono); font-size:13.5px; line-height:1.5; margin:10px 0 16px}
+table{border-collapse:collapse; width:100%; font-size:15px; margin:8px 0 16px; background:var(--card)}
+.tablewrap{overflow-x:auto}
+th,td{border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top}
+th{font-weight:700}
+.toks{font-family:var(--mono); font-size:15px; background:var(--card); border:1px solid var(--line); border-radius:4px; padding:12px; display:flex; flex-wrap:wrap; gap:4px; align-items:center}
+.tok{border:1px dashed var(--graphite); background:transparent; color:var(--ink); padding:3px 7px; border-radius:4px; cursor:pointer; font-family:var(--mono); font-size:15px}
+.tok[aria-pressed="true"]{border-style:solid; border-color:var(--blue); background:var(--hi)}
+.tokexp{min-height:48px; margin:8px 0 16px; padding:8px 12px; background:var(--card); border-left:4px solid var(--blue); font-size:15px}
+.btnrow{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0}
+.btn{background:var(--ink); color:var(--paper); border:none; border-radius:6px; padding:8px 14px; cursor:pointer; font-weight:700; font-size:15px}
+.btn.ghost{background:transparent; color:var(--ink); border:1.4px solid var(--ink)}
+.btn:focus-visible,.tok:focus-visible,.opt input:focus-visible+span,nav a:focus-visible,.linkbtn:focus-visible{outline:3px solid var(--blue); outline-offset:2px}
+.quiz{margin-top:34px}
+.quiz > h3{margin-top:0}
+.q{background:var(--card); border:1px solid var(--line); border-radius:6px; padding:16px 16px 14px; margin:0 0 18px}
+.q .qn{font-size:13px; color:var(--graphite); margin-bottom:4px}
+.q .qt{font-weight:700; margin-bottom:8px}
+.q .hint{font-size:14px; color:var(--graphite); margin:-4px 0 8px}
+.stmts{margin:4px 0 12px; padding:0; list-style:none}
+.stmts li{padding:8px 12px; border:1px solid var(--line); border-radius:4px; margin-bottom:6px}
+.stmts li b{color:var(--blue)}
+.stmts .mert{text-align:center; font-weight:700; color:var(--graphite); border:none; padding:0; margin:2px 0 6px}
+.opt{display:flex; gap:10px; align-items:flex-start; padding:7px 10px; border:1.4px solid var(--line); border-radius:6px; margin-bottom:6px; cursor:pointer}
+.opt input{margin-top:5px; accent-color:var(--blue)}
+.opt.ok{border-color:var(--green); background:color-mix(in srgb,var(--green) 10%,transparent)}
+.opt.bad{border-color:var(--red); background:color-mix(in srgb,var(--red) 10%,transparent)}
+.opt.miss{border-color:var(--green); border-style:dashed}
+.opt .tag{margin-left:auto; font-size:13px; font-weight:700; white-space:nowrap; padding-left:8px}
+.opt.ok .tag{color:var(--green)} .opt.bad .tag,.opt.miss .tag{color:var(--red)}
+.opt.miss .tag{color:var(--green)}
+.fb{margin-top:10px; padding:10px 12px; border-radius:4px; display:none; font-size:15.5px}
+.fb.show{display:block}
+.fb.good{background:color-mix(in srgb,var(--green) 12%,transparent)}
+.fb.wrong{background:color-mix(in srgb,var(--red) 12%,transparent)}
+.fb .res{font-weight:700}
+.pager{display:flex; justify-content:space-between; gap:12px; margin-top:34px; flex-wrap:wrap}
+.drill{background:var(--card); border:1px solid var(--line); border-radius:6px; padding:16px}
+.drill .score{font-size:15px; color:var(--graphite); margin-bottom:8px}
+.drill .sym{border:1px solid var(--line); border-radius:4px; margin-bottom:12px; padding:8px; background:var(--paper)}
+.drill .grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.drill .ch{border:1.4px solid var(--line); background:var(--card); color:var(--ink); border-radius:6px; padding:10px; cursor:pointer; text-align:left; font-size:15px}
+.drill .ch.ok{border-color:var(--green); background:color-mix(in srgb,var(--green) 12%,transparent)}
+.drill .ch.bad{border-color:var(--red); background:color-mix(in srgb,var(--red) 12%,transparent)}
+.drill .ex{margin-top:10px; font-size:15px; min-height:24px}
+.cheat td:first-child{width:210px; min-width:170px}
+.cheat td:first-child svg{max-width:200px}
+.spec{background:var(--card); border:1px solid var(--line); border-left:4px solid var(--graphite); padding:10px 14px; margin:10px 0 16px; border-radius:0 4px 4px 0}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr; gap:14px; padding-top:16px}
+  nav{position:static}
+  nav ol{display:flex; overflow-x:auto; gap:4px; padding-bottom:6px}
+  nav li{flex:0 0 auto}
+  nav a{white-space:nowrap}
+  .hero h1{font-size:24px}
+  .drill .grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fb.show{animation:fbin .18s ease-out}
+  @keyframes fbin{from{opacity:0; transform:translateY(-3px)}to{opacity:1; transform:none}}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="mOpen" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1 L11,6 L1,11" style="fill:none;stroke:var(--ink);stroke-width:1.4"/></marker>
+    <marker id="mTri" viewBox="0 0 16 16" refX="15" refY="8" markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,1 L15,8 L1,15 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:1.4"/></marker>
+    <marker id="mDF" viewBox="0 0 20 12" refX="19" refY="6" markerWidth="20" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,6 L10,1 L19,6 L10,11 Z" style="fill:var(--ink);stroke:var(--ink);stroke-width:1.2"/></marker>
+    <marker id="mDH" viewBox="0 0 20 12" refX="19" refY="6" markerWidth="20" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1,6 L10,1 L19,6 L10,11 Z" style="fill:var(--card);stroke:var(--ink);stroke-width:1.2"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <nav aria-label="Fejezetek">
+    <ol id="navlist"></ol>
+    <div class="tools"><button class="linkbtn" id="reset">Haladás törlése</button></div>
+  </nav>
+  <main>
+    <header class="hero" aria-label="LAB5 gyakorló">
+      <div class="hd"><div class="stp">«gyakorló»</div><h1>UML struktúra modellek</h1></div>
+      <div class="cmp">+ beugró(diagram) : 4 kérdés<br>+ kiugró(szöveg, modell, kód) : 85%</div>
+      <div class="cmp">Szoftvertechnológia, LAB5</div>
+    </header>
+    <article id="content"></article>
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- SVG helpers ---------- */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function svg(w,h,body,cls){return `<svg class="dg${cls?' '+cls:''}" viewBox="0 0 ${w} ${h}" role="img">${body}</svg>`;}
+function B(x,y,w,name,attrs,o){
+  attrs=attrs||[]; o=o||{};
+  const head=26+(o.st?14:0);
+  const body=attrs.length? attrs.length*17+8 : (o.nb?0:10);
+  const h=head+body;
+  let s=`<rect class="bx" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+  let ty=y+18;
+  if(o.st){s+=`<text class="st" x="${x+w/2}" y="${y+15}" text-anchor="middle">«${esc(o.st)}»</text>`; ty+=13;}
+  s+=`<text class="nm${o.it?' it':''}${o.ul?' ul':''}" x="${x+w/2}" y="${ty}" text-anchor="middle">${esc(name)}</text>`;
+  if(!o.nb) s+=`<line class="ln" x1="${x}" y1="${y+head}" x2="${x+w}" y2="${y+head}"/>`;
+  attrs.forEach((a,i)=>{
+    const u=a.charAt(0)==="_";
+    s+=`<text class="${u?'ul':''}" x="${x+8}" y="${y+head+16+i*17}">${esc(u?a.slice(1):a)}</text>`;
+  });
+  return s;
+}
+function L(x1,y1,x2,y2,o){
+  o=o||{};
+  return `<line class="ln${o.d?' ds':''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"${o.e?` marker-end="url(#${o.e})"`:''}${o.s?` marker-start="url(#${o.s})"`:''}/>`;
+}
+function P(d,o){o=o||{};return `<path class="ln${o.d?' ds':''}" d="${d}"${o.e?` marker-end="url(#${o.e})"`:''}/>`;}
+function T(x,y,t,o){
+  o=o||{};
+  return `<text${o.id?` id="${o.id}"`:''} class="${o.c||''}" x="${x}" y="${y}"${o.a?` text-anchor="${o.a}"`:''}>${esc(t)}</text>`;
+}
+function M(x,y,t,id,a){return T(x,y,t,{c:'ml',id:id,a:a});}
+function X(x,y){return `<line class="ln" x1="${x-5}" y1="${y-5}" x2="${x+5}" y2="${y+5}"/><line class="ln" x1="${x-5}" y1="${y+5}" x2="${x+5}" y2="${y-5}"/>`;}
+function COMP(x,y,w,h,name){
+  const ix=x+w-26, iy=y+8;
+  return `<rect class="bx" x="${x}" y="${y}" width="${w}" height="${h}"/>`+
+    `<rect class="bx" x="${ix}" y="${iy}" width="16" height="18"/><rect class="bx" x="${ix-4}" y="${iy+4}" width="8" height="4"/><rect class="bx" x="${ix-4}" y="${iy+11}" width="8" height="4"/>`+
+    `<text class="st" x="${x+w/2}" y="${y+h/2-6}" text-anchor="middle">«component»</text>`+
+    `<text class="nm" x="${x+w/2}" y="${y+h/2+12}" text-anchor="middle">${esc(name)}</text>`;
+}
+function BALL(cx,cy){return `<circle class="bx" cx="${cx}" cy="${cy}" r="8"/>`;}
+function SOCK(cx,cy,openLeft){return `<path class="ln" d="M${cx},${cy-12} A12,12 0 0 ${openLeft?1:0} ${cx},${cy+12}"/>`;}
+function PORT(cx,cy){return `<rect class="bx" x="${cx-7}" y="${cy-7}" width="14" height="14"/>`;}
+function fig(s,cap){return `<div class="fig">${s}${cap?`<div class="cap">${cap}</div>`:''}</div>`;}
+
+/* ---------- Shared diagrams ---------- */
+const libDiagram = svg(720,400,
+  B(30,20,190,"Szemely",["nev : String"],{it:true})+
+  B(30,160,190,"Tag",["/aktivKolcsonzes : Integer"])+
+  L(125,160,125,71,{e:"mTri"})+
+  B(500,20,170,"Konyvtar",["nev : String"])+
+  B(500,160,170,"Peldany",["leltariSzam : String"])+
+  B(500,310,170,"Konyv",["cim : String","isbn : String"])+
+  L(585,71,585,160,{s:"mDF"})+ M(595,92,"1")+ M(595,152,"0..*")+
+  L(585,211,585,310,{e:"mOpen"})+ X(585,223)+ M(595,240,"1..*")+ M(595,302,"1")+
+  L(220,185,500,185)+ M(228,178,"0..1")+ M(492,178,"0..5","", "end")+
+  L(360,185,360,262,{d:true})+
+  B(285,262,150,"Kolcsonzes",["hatarido : Date"])
+);
+
+const rendDiagram = svg(700,130,
+  B(40,30,200,"Rendeles",["datum : Date"])+
+  B(440,30,200,"Tetel",["mennyiseg : Integer"])+
+  L(240,57,440,57,{s:"mDF",e:"mOpen"})+ M(254,50,"1")+ M(432,50,"1..*","","end")+
+  T(440,108,"{mennyiseg > 0}",{c:'nt'})
+);
+
+/* ---------- Relációanalízis options ---------- */
+const REL=[
+  "<b>A (+ −):</b> A következtetés első fele igaz, a második fele hamis.",
+  "<b>B (− +):</b> A következtetés első fele hamis, a második fele igaz.",
+  "<b>C (+ + −):</b> A következtetés mindkét fele igaz, de a következtetés maga hamis.",
+  "<b>D (+ + +):</b> A következtetés mindkét fele igaz, és a következtetés is igaz.",
+  "<b>E (− −):</b> A következtetés mindkét fele hamis."
+];
+
+/* ---------- Chapters ---------- */
+const CH=[];
+
+CH.push({id:"bevezeto", title:"Így használd", html:`
+<h2>Így használd</h2>
+<p>Ez a gyakorló a LAB5 beugrójára és kiugrójára készít fel. A fejezetek sorban követik a 11. előadás anyagát: komponensek, osztályok, asszociációk, navigálhatóság, példánymodellek, a további jelölések, végül a modell és a kód kapcsolata. Minden fejezet végén ellenőrző kérdések vannak, az utolsó két fejezet pedig próba beugró és próba kiugró.</p>
+<div class="key"><b>A számonkérés formája.</b> A beugróban 4 kérdés vonatkozik ugyanarra a diagramra, feleletválasztós, all-or-nothing és relációanalízis típusban. A kiugró 2 feladatból áll, feladatonként 4 alkérdéssel. Az egyik összetett: szöveges leírást, modellt és kódot kell összevetni. 85% kell, és 3 próbálkozásod van.</div>
+<h3>A relációanalízis</h3>
+<p>Két állítást kapsz, köztük egy „mert” szóval. Először mindkettőről külön döntsd el, hogy igaz-e. Csak ha mindkettő igaz, akkor jön a második kérdés: tényleg a második állítás <i>indokolja</i> az elsőt? A válaszlehetőségek:</p>
+<ul class="tight">${REL.map(r=>`<li>${r}</li>`).join("")}</ul>
+<div class="trap"><b>Tipikus csapda:</b> mindkét állítás igaz, és ugyanarról a diagramrészletről szól, mégsem a második magyarázza az elsőt. Ilyenkor C a jó válasz, nem D.</div>
+<div class="trap"><b>Figyelj a kötőszóra:</b> a kiugróban „ezért” is előfordul. „X; mert Y” esetén Y az ok, „X; ezért Y” esetén X az ok és Y a következmény. Mindkét esetben azt kell eldönteni, hogy tényleg az okból következik-e a másik.</div>
+<p>Ezek a betűjelek és szövegek megegyeznek az éles beugróéval. A + igazat, a − hamisat jelent. C-nél és D-nél a harmadik jel magáról a „mert” kapcsolatról szól.</p>
+<h3>All-or-nothing kérdések</h3>
+<p>Ezeknél minden jó választ be kell jelölni, rosszat egyet sem. Itt is így pontozunk: a kérdés csak akkor számít helyesnek, ha a teljes kijelölés pontos.</p>
+<p>A haladásodat a böngésző megjegyzi, a bal oldali listában látod, hány kérdést oldottál már meg helyesen.</p>
+`, quiz:[]});
+
+CH.push({id:"komponensek", title:"Komponensek", html:`
+<h2>Komponensmodellek</h2>
+<p>A komponens a rendszer moduláris, <b>cserélhető</b> része. A belseje rejtett, a környezetével csak jól definiált interfészeken keresztül érintkezik. Ha egy másik komponens ugyanazokat az interfészeket biztosítja és várja el, a helyére tehető.</p>
+<h3>Függőség (dependency)</h3>
+${fig(svg(700,120, COMP(40,25,200,70,"OrderService")+COMP(460,25,200,70,"EmailNotifier")+L(240,60,460,60,{d:true,e:"mOpen"})+T(350,50,"«use»",{c:'st',a:'middle'})),
+ "Szaggatott vonal, nyitott nyílhegy. A nyíl a <b>szállító</b> (supplier) felé mutat: az OrderService függ az EmailNotifier-től, annak változása kihathat rá.")}
+<p>A függőség a leglazább kapcsolat: csak annyit mond, hogy a kliens szemantikája nem teljes a szállító nélkül. Hogy pontosan mitől függ, az itt még nincs megadva.</p>
+<h3>Biztosított és elvárt interfész</h3>
+${fig(svg(700,120, COMP(250,25,200,70,"Rendszer")+L(250,60,170,60)+BALL(162,60)+T(162,90,"IRendeles",{a:'middle'})+L(450,60,530,60)+SOCK(542,60,false)+T(542,90,"INotifier",{a:'middle'})),
+ "Bal oldalon a <b>biztosított</b> (provided) interfész: a „nyalóka”, ezt a komponens nyújtja másoknak. Jobb oldalon az <b>elvárt</b> (required) interfész: a „foglalat”, ezt a komponens használná.")}
+${fig(svg(700,120, COMP(40,25,190,70,"EmailNotifier")+L(230,60,330,60)+BALL(338,60)+SOCK(338,60,true)+L(350,60,470,60)+COMP(470,25,190,70,"OrderService")+T(338,36,"Notifier",{a:'middle'})),
+ "Ball-and-socket: az EmailNotifier biztosítja, az OrderService elvárja a Notifier interfészt. A két komponens az interfészen keresztül kapcsolódik, így lazán csatolt.")}
+<p>Ugyanez alternatív jelöléssel: az interfész külön dobozként <code>«interface» Notifier</code>, a megvalósító komponenstől szaggatott vonal, üres háromszög fejjel (InterfaceRealization, „megvalósítom”), a használótól szaggatott nyíl <code>«use»</code> címkével (Usage dependency, „használom”).</p>
+<h3>Port és belső felépítés</h3>
+${fig(svg(700,240,
+  `<rect class="bx" x="150" y="20" width="520" height="200"/>`+T(410,42,"«component» WebShop",{c:'nm',a:'middle'})+
+  PORT(150,120)+T(150,104,"p",{a:'middle'})+L(143,120,80,120)+BALL(72,120)+T(72,150,"IShop",{a:'middle'})+
+  `<rect class="bx" x="220" y="90" width="170" height="60"/>`+T(305,125,"ui : Frontend [1]",{a:'middle'})+PORT(220,120)+
+  L(157,120,213,120,{e:"mOpen"})+T(186,172,"delegation",{c:'nt',a:'middle'})+
+  `<rect class="bx" x="470" y="90" width="180" height="60"/>`+T(560,125,"logika : OrderService [1]",{a:'middle'})+
+  L(390,120,418,120)+SOCK(430,120,false)+L(470,120,438,120)+BALL(430,120)+T(430,172,"assembly (IRendeles)",{c:'nt',a:'middle'})
+ ),"A <b>port</b> (kis négyzet a határon) nevesített kapcsolódási pont. A belső felépítésben <b>részek</b> vannak (szerep : Típus [multiplicitás]). A <b>delegation connector</b> a külső portra érkező kérést továbbítja egy belső részhez, az <b>assembly connector</b> két belső részt köt össze.")}
+<div class="trap"><b>Csapda 1:</b> a belső felépítésben a <code>ui : Frontend [1]</code> nem típus, hanem <b>szerep</b>. Futáskor egy Frontend példány tölti be. Ugyanazzal a típussal több szerep is lehet, például egy autónál „használt kerék [4]” és „pótkerék [0..1]”, mindkettő Wheel típusú.</div>
+<div class="trap"><b>Csapda 2:</b> a delegálás iránya nem fordulhat meg. Ha a külső port <i>biztosít</i> egy interfészt, akkor a belső rész is biztosítja, ha a belső rész <i>elvár</i> valamit, azt a külső port is elvárja.</div>
+<div class="trap"><b>Csapda 3:</b> assembly és delegation connector a tárgy szerint csak belső felépítésnél használható.</div>
+`, quiz:[
+ {id:"k1", type:"single", q:"Egy diagramon szaggatott vonal megy A-tól B-ig, a B végén nyitott nyílheggyel. Mit jelent?",
+  opts:["A függ B-től, B a szállító (supplier).","B függ A-tól, A a szállító.","A megvalósítja a B interfészt.","B az A általánosítása."], ans:0,
+  ex:"Függőségnél a nyíl a szállító felé mutat. A kliens (A) az, akire a szállító (B) változása kihathat. A megvalósításnál üres háromszög fej lenne, az általánosításnál pedig folytonos vonal és üres háromszög."},
+ {id:"k2", type:"rel", s1:"Ha egy komponens kizárólag az interfészein keresztül kapcsolódik a környezetéhez, lecserélhető egy másik komponensre, amely ugyanezeket az interfészeket biztosítja és várja el.", s2:"Az elvárt (required) interfészt a nyalóka (lollipop) jelöli.", ans:0,
+  ex:"Az 1. igaz: pont ez a komponensek cserélhetőségének lényege. A 2. hamis: a nyalóka a <b>biztosított</b> interfész, az elvárt a foglalat (félkör)."},
+ {id:"k3", type:"multi", q:"A fenti WebShop belső felépítés ábrája alapján melyik állítások igazak?",
+  opts:["A <code>ui : Frontend [1]</code> egy szerep, amelyet futáskor egy Frontend példány tölt be.","A belső felépítés elemei típusokat deklarálnak, nem szerepeket.","A delegation connector a <code>p</code> portra érkező kéréseket továbbítja a ui rész felé.","Ha a <code>p</code> port biztosítja az IShop interfészt, akkor a delegálás célpontjának is biztosítania kell.","A logika rész elvárja az IRendeles interfészt, a ui biztosítja."], ans:[0,2,3],
+  ex:"A részek szerepek, nem típusok. A delegálás a külső porttól befelé visz, és nem fordíthatja meg az irányt, ezért a célpontnak is biztosítania kell az interfészt. Az assemblynél a ui oldalán van a foglalat (elvárja), a logika oldalán a nyalóka (biztosítja), tehát az utolsó állítás fordítva igaz."}
+]});
+
+CH.push({id:"osztalyok", title:"Osztály és tulajdonság", html:`
+<h2>Osztály, tulajdonság, általánosítás</h2>
+<p>Az osztály a modellezett rendszer egy <b>fogalma</b>. Nem feltétlenül Java- vagy C++-osztály: lehet üzleti fogalom, adatszerkezet vagy implementációs elem is, attól függően, milyen részletességi szinten modellezünk (fogalmi modell, analízis, részletes implementáció). Elnevezése főnév, egyes számban, rövidítés nélkül.</p>
+<h3>A tulajdonság (property) szintaxisa</h3>
+<p>Kattints a darabokra, hogy lásd, mit jelentenek.</p>
+<div class="toks" id="toks1">
+ <button class="tok" data-e="Láthatóság. + public, - private, # protected, ~ package. Opcionális.">-</button>
+ <button class="tok" data-e="A tulajdonság neve. Kötelező.">email</button>
+ <button class="tok" data-e="Típus: beépített típus (String, Integer, Real, Boolean, UnlimitedNatural) vagy másik Classifier. Opcionális.">: String</button>
+ <button class="tok" data-e="Multiplicitás: alsó..felső határ, azaz hány érték tartozhat a tulajdonsághoz. Itt legalább egy, felülről korlátlan. A * önmagában 0..*-ot jelent.">[1..*]</button>
+ <button class="tok" data-e="Tulajdonság-módosítók kapcsos zárójelben: {unique} nem ismétlődhet érték, {ordered} sorrendje van, {readOnly} nem módosítható, {id} azonosító. Asszociációvégeken is használhatók.">{unique, ordered}</button>
+</div>
+<div class="toks" id="toks2" style="margin-top:8px">
+ <button class="tok" data-e="Publikus láthatóság.">+</button>
+ <button class="tok" data-e="A / jel: származtatott (derived) tulajdonság. Az értéke számítással áll elő, például a születési dátumból. A számítást még nem kell megadni.">/</button>
+ <button class="tok" data-e="A tulajdonság neve.">kor</button>
+ <button class="tok" data-e="Típus.">: Integer</button>
+ <button class="tok" data-e="Alapértelmezett érték (default) az = után.">= 0</button>
+</div>
+<div class="tokexp" id="tokexp" aria-live="polite">Válassz egy darabot.</div>
+<p>A teljes alak: <code>[láthatóság] [/] név [: típus] [[multiplicitás]] [= default] [{módosítók}]</code>. Egy osztály tulajdonságait <b>attribútumnak</b> hívjuk.</p>
+<div class="key"><b>Beépített típusok:</b> Integer, Real, Boolean, String, UnlimitedNatural. Ezek <b>matematikai</b> fogalmak: az Integer bármilyen egész számot leírhat, nincs bitmérete.</div>
+<h3>Absztrakt osztály és általánosítás</h3>
+${fig(svg(700,250,
+  B(40,20,270,"Customer",["name : String","email : String [1..*]"])+
+  B(40,170,270,"VIP Customer",["discount : Real","email : String [1..2] {redefines email}"])+
+  L(175,170,175,88,{e:"mTri"})+
+  B(480,20,140,"Shape",[],{it:true})+
+  B(400,160,110,"Polygon",[],{nb:true})+B(540,160,110,"Ellipse",[],{nb:true})+
+  L(455,160,530,56,{e:"mTri"})+L(595,160,570,56,{e:"mTri"})
+ ),"Folytonos vonal, üres háromszög a szülőnél: általánosítás. A dőlt betűs Shape absztrakt (írható <code>{abstract}</code> is).")}
+<ul class="tight">
+ <li>A leszármazott <b>megörökli</b> a szülő tagjait, és a VIP Customer példány a Customer (közvetett) példánya is.</li>
+ <li><b>Bővítheti</b> a szülőt (discount), vagy ellentmondásmentesen <b>felüldefiniálhatja</b> (redefinition): az <code>email [1..2]</code> szűkebb, mint az <code>[1..*]</code>, ezért szabályos.</li>
+ <li>Egy osztálynak <b>több</b> általánosítása is lehet. Ez akkor is modellezhető, ha a célnyelv nem támogatja a többszörös öröklést.</li>
+ <li>Az absztrakt osztálynak nem lehet közvetlen példánya, csak a leszármazottainak.</li>
+ <li>Az UML szándékosan <i>generalization</i>-nek hívja, nem <i>inheritance</i>-nek, mert nem kötődik egy programozási nyelvhez.</li>
+</ul>
+`, quiz:[
+ {id:"o1", type:"single", q:"Mit jelent a <code>telefon : String [0..1]</code> attribútum?",
+  opts:["Pontosan egy telefonszám tartozik a példányhoz.","Legfeljebb egy telefonszám tartozik hozzá, de hiányozhat is.","Legalább egy, felülről korlátlan számú telefonszám.","A telefonszám alapértéke 0 vagy 1."], ans:1,
+  ex:"A [0..1] alsó határa 0, felső határa 1: opcionális, legfeljebb egy érték."},
+ {id:"o2", type:"rel", s1:"Az UML Integer típus értékkészlete nem korlátos.", s2:"Az UML beépített típusai matematikai fogalmak, nincs rögzített bitméretük.", ans:3,
+  ex:"Mindkettő igaz, és éppen az indokolja a korlátlanságot, hogy matematikai egészekről van szó, nem például 32 bites int-ről."},
+ {id:"o3", type:"multi", q:"A fenti Customer / VIP Customer / Shape ábra alapján melyik állítások igazak?",
+  opts:["Egy VIP Customer példány a Customer példányának is számít.","Egy VIP Customernek lehet 3 email címe.","Egy (nem VIP) Customernek lehet 3 email címe.","A Shape osztálynak nem lehet közvetlen példánya.","Egy osztálynak az UML-ben legfeljebb egy általánosítása lehet."], ans:[0,2,3],
+  ex:"A VIP Customer felüldefiniálta az emailt [1..2]-re, ezért neki legfeljebb 2 lehet, a sima Customernek viszont [1..*] szerint akárhány. Az UML megengedi a többszörös általánosítást."}
+]});
+
+CH.push({id:"asszociaciok", title:"Asszociációk", html:`
+<h2>Asszociáció, aggregáció, kompozíció</h2>
+<p>Az asszociáció <b>tartós szemantikai kapcsolat</b> két típus példányai között, nem csak egy metódushívás idejére szól. Az asszociáció példánya a <b>link</b>. Az asszociációvég maga is egy tulajdonság (property).</p>
+<h3>A multiplicitás olvasása</h3>
+${fig(svg(700,100, B(40,40,160,"Customer",[])+B(480,40,160,"Order",[])+L(200,58,480,58)+M(212,50,"1","mC")+M(470,50,"0..*","mO","end")),"")}
+<div class="btnrow">
+ <button class="btn ghost" id="multC">Egy Customerhez hány Order tartozik?</button>
+ <button class="btn ghost" id="multO">Egy Orderhez hány Customer tartozik?</button>
+</div>
+<div class="tokexp" id="multexp" aria-live="polite">Válassz egy kérdést.</div>
+<div class="trap"><b>Csapda:</b> ha a diagramon <b>nincs</b> multiplicitás feltüntetve, abból <b>semmire nem következtethetsz</b> a modellbeli multiplicitásról. Nem jelent automatikusan 1-et vagy *-ot.</div>
+<h3>Attribútum vagy asszociáció</h3>
+${fig(svg(700,110, B(20,20,120,"Customer",[])+B(250,20,100,"Order",[])+L(140,38,250,38)+M(148,31,"1")+M(242,31,"0..*","","end")+T(400,45,"≈",{c:'nm',a:'middle'})+B(450,20,220,"Customer",["order : Order [0..*]"])),
+ "Lényegében ugyanazt fejezik ki, csak mást hangsúlyoznak és máshogy bővíthetők.")}
+<div class="trap"><b>Csapda:</b> asszociáció mellé <b>nem</b> kell (és nem is szabad) külön <code>orders : List</code> attribútumot felvenni. A tárolás módja (lista, tömb, hashmap) implementációs részlet.</div>
+<h3>Elnevezés</h3>
+<p>Az asszociáció és a végei is elnevezhetők. Alapesetben a vég neve a hozzá tartozó osztály neve kisbetűvel. Akkor érdemes kiírni, ha plusz információt hordoz, különösen ha ugyanazon két osztály között több asszociáció is van (a professzor írta, lektorálta vagy tanítja a könyvet).</p>
+<h3>Asszociációs osztály</h3>
+${fig(svg(700,190, B(40,30,140,"Person",[])+B(500,30,140,"Company",[])+L(180,48,500,48)+M(190,40,"1..*")+M(490,40,"0..*","","end")+T(340,40,"munkaviszony",{c:'nt',a:'middle'})+L(340,48,340,110,{d:true})+B(260,110,160,"Employment",["salary : Real"])),
+ "A fizetés a kapcsolathoz tartozik, nem a személyhez: ha valaki két cégnél dolgozik, cégenként más a fizetése. Az asszociációs osztály egy példánya pontosan egy linkhez tartozik.")}
+<h3>Aggregáció és kompozíció</h3>
+${fig(svg(700,140, B(40,20,140,"Rendeles",[])+B(500,20,140,"Tetel",[])+L(180,38,500,38,{s:"mDF"})+M(194,31,"1")+M(490,31,"1..*","","end")+T(340,31,"kompozíció",{c:'nt',a:'middle'})+
+  B(40,90,140,"Csoport",[])+B(500,90,140,"Tag",[])+L(180,108,500,108,{s:"mDH"})+M(194,101,"0..*")+M(490,101,"0..*","","end")+T(340,101,"megosztott aggregáció",{c:'nt',a:'middle'})),
+ "A rombusz az <b>egész</b> felőli végen van. Teli rombusz: kompozíció. Üres rombusz: megosztott (shared) aggregáció.")}
+<ul class="tight">
+ <li><b>Kompozíció:</b> rész-egész kapcsolat. Egy rész egyszerre csak <b>egy</b> kompozícióban vehet részt, és az egész törlésekor a részek is törlődnek.</li>
+ <li><b>Megosztott aggregáció:</b> csoportosítás, egy példány több csoportban is lehet. Pontos jelentése a szabvány szerint is alkalmazásfüggő.</li>
+ <li>Mindkettő csak <b>bináris</b> asszociáción lehet, csak az <b>egyik</b> végen, és nem alkothat <b>kört</b>.</li>
+</ul>
+<h3>Többes asszociáció</h3>
+<p>Kettőnél több osztályt is összeköthet egy asszociáció (rombusz a közepén, abból vonalak). Akkor kell, ha az információhoz mindhárom résztvevő konkrét példánya fontos, például játékos, csapat és év.</p>
+`, quiz:[
+ {id:"a1", type:"single", q:"<code>Kurzus</code> 1 ◆—— 1..* <code>Fazis</code> (teli rombusz a Kurzus végén). Mi történik, ha törlünk egy Kurzus példányt?",
+  opts:["A hozzá tartozó Fázisok is törlődnek.","A Fázisok megmaradnak, és átkerülnek egy másik kurzushoz.","Semmi, a kompozíció csak a tárolás helyét adja meg.","A diagramból ez nem derül ki."], ans:0,
+  ex:"Kompozíciónál az egész felel a részek létezéséért: az egész törlésével a részek is törlődnek."},
+ {id:"a2", type:"rel", s1:"A Person–Company munkaviszonyhoz tartozó fizetést asszociációs osztályban érdemes modellezni.", s2:"Egy személy több cégnél is dolgozhat, és cégenként más lehet a fizetése.", ans:3,
+  ex:"Mindkettő igaz, és a második az indok: mivel a fizetés kapcsolatonként más, nem tartozhat sem a személyhez, sem a céghez."},
+ {id:"a3", type:"multi", q:"Melyik állítások igazak az aggregációra és kompozícióra?",
+  opts:["Kompozíció csak bináris asszociáció egyik végén állhat.","Egy rész egyszerre két kompozícióban is szerepelhet.","Megosztott aggregációban egy példány több csoportban is részt vehet.","Kompozíciós kapcsolatok kört alkothatnak.","A rombusz a rész felőli végen van."], ans:[0,2],
+  ex:"Egy rész egyszerre csak egy kompozícióban lehet, és nem lehet kör. A rombusz mindig az egész (tartalmazó) felőli végen van."},
+ {id:"a4", type:"single", q:"Egy asszociációvégen a diagramon nincs feltüntetve multiplicitás. Mit tudunk erről a végről?",
+  opts:["A multiplicitása 1.","A multiplicitása 0..*.","A multiplicitása 0..1.","A diagramból nem következtethetünk a modellbeli multiplicitásra."], ans:3,
+  ex:"A szabvány kifejezetten kimondja: ha nincs feltüntetve, nem vonhatunk le következtetést. A diagram csak a modell egy nézete."}
+]});
+
+CH.push({id:"navigalhatosag", title:"Navigálhatóság", html:`
+<h2>Navigálhatóság és végek birtoklása</h2>
+<p>A navigálhatóság azt jelenti, hogy egy példányból a link másik végén lévő példányok <b>hatékonyan</b> elérhetők. Hogy ez hogyan valósul meg (például referencia), az implementációfüggő, a modell csak a szándékot jelzi.</p>
+${fig(svg(720,300,
+  B(20,15,70,"A",[],{nb:true})+B(270,15,70,"B",[],{nb:true})+L(90,28,270,28,{s:"mOpen",e:"mOpen"})+T(370,33,"mindkét irány navigálható")+
+  B(20,75,70,"C",[],{nb:true})+B(270,75,70,"D",[],{nb:true})+L(90,88,270,88)+X(102,88)+X(258,88)+T(370,93,"egyik irány sem navigálható")+
+  B(20,135,70,"E",[],{nb:true})+B(270,135,70,"F",[],{nb:true})+L(90,148,270,148)+T(370,153,"nem specifikált (lehet navigálható)")+
+  B(20,195,70,"G",[],{nb:true})+B(270,195,70,"H",[],{nb:true})+L(90,208,270,208,{e:"mOpen"})+X(102,208)+T(370,213,"G → H navigálható, H → G nem")+
+  B(20,255,70,"I",[],{nb:true})+B(270,255,70,"J",[],{nb:true})+L(90,268,270,268,{e:"mOpen"})+T(370,273,"I → J navigálható, J → I nem specifikált")
+ ),"Nyílhegy: navigálható. X: nem navigálható. Semmi: nem specifikált. Az utolsó sorban gyakran a jobb olvashatóság miatt maradnak el az X-ek, de szigorúan olvasva ott a J → I irány nem specifikált.")}
+<div class="trap"><b>Csapda 1:</b> a jelöletlen vég <b>nem ugyanaz</b>, mint a nem navigálható. Jelöletlen = nem specifikált.</div>
+<div class="trap"><b>Csapda 2:</b> a nem navigálható (X) sem jelenti, hogy az elérés lehetetlen. A szabvány szerint ilyenkor az elérés vagy lehetséges, vagy nem, és ha igen, akkor nem feltétlenül hatékony.</div>
+<h3>Asszociációvég birtoklása (pont a vonal végén)</h3>
+${fig(svg(700,90, B(40,25,90,"A",[],{nb:true})+B(450,25,90,"B",[],{nb:true})+L(130,38,450,38)+`<circle class="dot" cx="444" cy="38" r="4"/>`+T(436,58,"b",{a:'end'})+T(140,58,"a")),
+ "A pont a <code>b</code> végen van: a <code>b</code> asszociációvéget (property-t) a <b>túloldali</b> A osztály birtokolja. Pont nélkül alapesetben maga az asszociáció birtokolja a végeit. Ha osztály birtokolja a véget, az a vég navigálható.")}
+`, quiz:[
+ {id:"n1", type:"single", q:"<code>I</code> —— <code>J</code>, a J végén nyílhegy, az I végén semmi. Mit tudunk biztosan?",
+  opts:["I-ből hatékonyan elérhetők a J példányok, a J → I irány nem specifikált.","J-ből I nem érhető el.","Mindkét irány navigálható.","Egyik irány sem navigálható."], ans:0,
+  ex:"A nyílhegy navigálhatóságot jelent I → J irányban. Az I végen nincs jelölés, ezért arról az irányról semmit nem mondhatunk."},
+ {id:"n2", type:"rel", s1:"Ha egy asszociációvég nem navigálható (X), akkor a másik oldalról a példányok semmilyen módon nem érhetők el.", s2:"A navigálhatóság hatékony elérést jelent, és a megvalósítás módja implementációfüggő.", ans:1,
+  ex:"Az 1. hamis: nem navigálható végnél az elérés lehetséges is lehet, csak nem feltétlenül hatékony. A 2. igaz."},
+ {id:"n3", type:"single", q:"<code>A</code> ——• <code>B</code>, a pont a B oldali végen van, a vég neve <code>b</code>. Ki birtokolja a <code>b</code> véget?",
+  opts:["Az A osztály.","A B osztály.","Maga az asszociáció.","Senki, a pont kompozíciót jelöl."], ans:0,
+  ex:"A pont azt jelzi, hogy a végét reprezentáló property-t a túloldali osztály birtokolja, itt az A. Ilyenkor A-ból B navigálható."}
+]});
+
+CH.push({id:"peldanyok", title:"Példánymodellek", html:`
+<h2>Példánymodellek (objektumdiagram)</h2>
+<p>A példányokat <b>InstanceSpecification</b> elemekkel modellezzük. Ez nem maga a futó objektum, hanem egy (gyakran részleges) leírás: lehet egy ténylegesen létező példány, egy lehetséges példány illusztrációja vagy egy pillanatkép.</p>
+${fig(svg(700,130, B(30,20,230,"fe : Hallgato",['nev = "Figy Elek"','neptun = "ABC123"'],{ul:true})+B(430,20,220,": Kurzus",['nev = "Szofttech"'],{ul:true})+L(260,50,430,50)),
+ "Aláhúzott <code>név : Típus</code>. A név és a típus is elhagyható (a jobb oldali névtelen). A rekeszben <b>slotok</b> vannak (tulajdonság = érték), a vonal egy <b>link</b>, vagyis egy asszociáció példánya.")}
+<div class="key"><b>Mikor érvényes egy példánymodell?</b>
+<ul class="tight" style="margin-top:6px">
+ <li>Megfelel a példányok típusai által megfogalmazott kényszereknek.</li>
+ <li>Csak olyan slotja van a példánynak, amely a típusában (vagy annak őseiben) definiált.</li>
+ <li>Csak olyan példányok között van link, amelyek osztályai között van asszociáció.</li>
+ <li>Az asszociációk multiplicitásai (minimum és maximum) be vannak tartva.</li>
+</ul></div>
+<div class="trap"><b>Csapda:</b> egy <b>hiányzó</b> slot nem hiba. A példányleírás lehet részleges, nem kell minden attribútum értékét megadni. Egy <b>idegen</b> slot viszont hiba. A hiányzó <b>link</b> viszont hiba, ha egy multiplicitás alsó határa miatt kötelező lenne.</div>
+<p>A példánymodell rajzolása arra is jó, hogy egy osztálymodellt megérts, és kérdéseket fogalmazz meg vele kapcsolatban. Ez a kiválóan megfelelt feladatoknál is hasznos lesz.</p>
+`, quiz:[
+ {id:"p1", type:"multi", q:"Osztálymodell: Kurzus 1 ◆—— 0..* Fazis 1 ◆—— 1..* Feladat. Melyik hibák vannak a lenti példánymodellben?",
+  fig: fig(svg(720,110,
+     B(20,20,170,"Kurzus",["nev : String"])+B(300,20,170,"Fazis",["nev : String","hatarido : Date"])+B(560,20,150,"Feladat",["hatarido : Date"])+
+     L(190,45,300,45,{s:"mDF"})+M(204,38,"1")+M(292,38,"0..*","","end")+L(470,45,560,45,{s:"mDF"})+M(484,38,"1")+M(552,38,"1..*","","end")))+
+     fig(svg(720,260,
+     B(20,20,190,"k1 : Kurzus",['nev = "Szofttech"','kredit = 4'],{ul:true})+B(20,160,190,"k2 : Kurzus",['nev = "Prog3"'],{ul:true})+
+     B(300,90,170,"f1 : Fazis",['nev = "Onboarding"'],{ul:true})+B(300,195,170,"f2 : Fazis",['nev = "HF1"'],{ul:true})+
+     B(550,90,160,"fe1 : Feladat",['hatarido = 2026-10-01'],{ul:true})+
+     L(210,55,300,110)+L(210,185,300,122)+L(210,200,300,218)+L(470,115,550,115))),
+  opts:["A k1 példánynak van kredit slotja, pedig a Kurzus osztályban nincs ilyen attribútum.","Az f1 két Kurzushoz is kapcsolódik, holott a Kurzus végen 1 a multiplicitás (és kompozíció is).","Az f2-nek nincs Feladata, holott az 1..* miatt legalább egy kellene.","A k2-höz két Fázis tartozik, ami sérti a multiplicitást.","Az fe1-nek nincs nev slotja."], ans:[0,1,2],
+  ex:"Idegen slot (kredit) hiba. Az f1 két kurzushoz kötése sérti az 1-es felső határt és a kompozíciót. Az f2 Feladat nélkül sérti az 1..* alsó határát. A k2-nek 0..* szerint akárhány fázisa lehet, az fe1-nek pedig a típusában nincs is nev attribútum."},
+ {id:"p2", type:"rel", s1:"Egy példánymodellben egy objektumnak nem kell minden attribútumához slotot megadni.", s2:"Az InstanceSpecification egy példány részleges leírása is lehet.", ans:3,
+  ex:"Mindkettő igaz, és a második indokolja az elsőt: mivel a leírás lehet részleges, a hiányzó slot nem hiba."},
+ {id:"p3", type:"single", q:"Mit jelöl egy példánymodellben két objektum között húzott vonal?",
+  opts:["Egy linket, vagyis egy asszociáció példányát.","Egy függőséget.","Egy általánosítást a két objektum között.","Egy új asszociációt, amely csak a példányok szintjén létezik."], ans:0,
+  ex:"A link az asszociáció példánya, és csak olyan objektumok között lehet, amelyek osztályai között van asszociáció."}
+]});
+
+CH.push({id:"tovabbi-elemek", title:"További elemek", html:`
+<h2>Műveletek és további jelölések</h2>
+<h3>Művelet és paraméter</h3>
+<p><code>+ leadRendeles(in r : Rendeles, out azon : Integer) : Boolean</code></p>
+<ul class="tight">
+ <li>Szintaxis: <code>[láthatóság] név(paraméterlista) : visszatérési típus [multiplicitás] {módosítók}</code>.</li>
+ <li>Paraméterirány: <code>in</code>, <code>out</code>, <code>inout</code>, <code>return</code>. A paraméternek is lehet multiplicitása, a 0 alsó határ opcionális paramétert jelent.</li>
+ <li>Az <b>aláhúzott</b> művelet vagy attribútum statikus, a dőlt betűs művelet absztrakt.</li>
+ <li>A műveletet (Operation) megvalósító viselkedés a metódus. Egy művelethez több metódus is tartozhat, így modellezhető a polimorfizmus.</li>
+</ul>
+<h3>Jelölések egy táblában</h3>
+<div class="tablewrap"><table>
+<tr><th>Jelölés</th><th>Jelentés</th></tr>
+<tr><td><code>+ - # ~</code></td><td>public, private, protected, package láthatóság. Jelentésük eltérhet egy-egy programozási nyelvétől.</td></tr>
+<tr><td><code>/osszeg</code></td><td>Származtatott tulajdonság, az értéke számított.</td></tr>
+<tr><td>aláhúzás</td><td>Statikus tag (osztályszintű), illetve példánymodellben a példány neve.</td></tr>
+<tr><td>dőlt név vagy <code>{abstract}</code></td><td>Absztrakt osztály vagy művelet.</td></tr>
+<tr><td><code>{meret &gt;= 0}</code></td><td>Kényszer (constraint): olyan feltétel, amelyet multiplicitással nem tudunk kifejezni. Kapcsos zárójelben vagy jegyzetben.</td></tr>
+<tr><td><code>«enumeration»</code></td><td>Felsorolás, az értékei EnumerationLiteralok (például magyar, német, angol).</td></tr>
+<tr><td><code>«dataType»</code></td><td>Adattípus: a példányai csak értékükben különböznek (például egy FullName).</td></tr>
+<tr><td><code>«signal»</code></td><td>Aszinkron jelzés, lehetnek attribútumai. A küldő nem várja meg a választ.</td></tr>
+<tr><td><code>«signal» Riasztas</code> az osztály rekeszében</td><td>Reception: az osztály képes fogadni az adott típusú jelzést.</td></tr>
+<tr><td><code>«interface»</code></td><td>Interfész: nyilvános, összetartozó szerződés. Attribútuma is lehet, de ezzel óvatosan.</td></tr>
+<tr><td>kis téglalap az asszociációvégen</td><td>Minősítő (qualifier): a túloldali példányokat partíciókra osztja (például sorszám szerint).</td></tr>
+</table></div>
+${fig(svg(700,150,
+  B(30,20,180,"Nyelv",["magyar","nemet","angol"],{st:"enumeration"})+
+  B(470,20,190,"ISensor",["+ meres() : Real"],{st:"interface"})+
+  B(470,110,190,"ProximitySensor",[],{nb:true})+
+  L(565,110,565,85,{d:true,e:"mTri"})
+ ),"Bal oldalon felsorolás. Jobb oldalon interfész-megvalósítás: <b>szaggatott</b> vonal, üres háromszög az interfésznél. Az általánosításnál ugyanez folytonos vonallal.")}
+`, quiz:[
+ {id:"t1", type:"single", q:"Mit jelent a <code>~</code> láthatóság?",
+  opts:["package: ugyanabban a csomagban lévő elemek érik el.","protected: az osztály és leszármazottai érik el.","private: csak az osztály tagjai érik el.","Származtatott tulajdonság."], ans:0,
+  ex:"<code>~</code> package, <code>#</code> protected, <code>-</code> private, <code>+</code> public. A származtatott jele a <code>/</code>."},
+ {id:"t2", type:"multi", q:"Melyik állítások igazak?",
+  opts:["Az aláhúzott művelet statikus.","A név előtti / származtatott tulajdonságot jelöl.","A DataType példányai csak értékükben különböznek egymástól.","A Signal szinkron hívást modellez, a hívó megvárja a választ.","Az UML láthatóságok jelentése pontosan megegyezik a Java-ban megszokottal."], ans:[0,1,2],
+  ex:"A Signal aszinkron, a küldő nem blokkol. Az UML láthatóságai eltérhetnek egy programozási nyelv jelentésétől."},
+ {id:"t3", type:"single", q:"Szaggatott vonal, a végén üres háromszög. Mi ez?",
+  opts:["Interfész-megvalósítás (InterfaceRealization).","Általánosítás.","Függőség.","Navigálható asszociáció."], ans:0,
+  ex:"Az általánosítás folytonos vonal üres háromszöggel, a függőség szaggatott vonal nyitott nyílheggyel, a navigálható asszociáció folytonos vonal nyitott nyílheggyel."}
+]});
+
+CH.push({id:"modell-es-kod", title:"Modellből kód", html:`
+<h2>A modell és a kód kapcsolata</h2>
+<p>A kiugró összetett feladatában szöveget, modellt és kódot kell összevetni. Ehhez tudnod kell, hogy az egyes modellelemek tipikusan minek felelnek meg a kódban, és mi <b>nem</b> következik a modellből.</p>
+${fig(svg(700,100, B(60,25,150,"Maze",[],{nb:true})+B(490,25,150,"Field",[],{nb:true})+L(210,38,490,38,{s:"mOpen",e:"mOpen"})+M(222,31,"1")+M(480,31,"1..*","","end")),"Mindkét irányban navigálható: a labirintus mezőkből áll, egy mező pontosan egy labirintushoz tartozik.")}
+<pre>public class Maze {
+    private final List&lt;Field&gt; fields = new ArrayList&lt;&gt;();   // 1..* vég → kollekció
+    void addField(Field f) { fields.add(f); }
+}
+
+public class Field {
+    private final Maze maze;                               // 1 vég → egyetlen referencia
+    public Field(Maze maze) {
+        this.maze = maze;
+        maze.addField(this);
+    }
+}</pre>
+<div class="tablewrap"><table>
+<tr><th>Modellelem</th><th>Tipikus megfelelő a kódban</th></tr>
+<tr><td>navigálható vég, felső határ 1</td><td>egy referencia típusú mező</td></tr>
+<tr><td>navigálható vég, felső határ &gt; 1</td><td>kollekció (List, Set). Hogy melyik, az implementációs döntés.</td></tr>
+<tr><td>nem navigálható vagy nem specifikált vég</td><td>nem kötelező, hogy legyen mező. Ha a modell nem specifikálja, a mező léte vagy hiánya sem ellentmondás.</td></tr>
+<tr><td>alsó határ ≥ 1</td><td>a kódnak biztosítania kell, például a konstruktorban kéri az elemet</td></tr>
+<tr><td>kompozíció</td><td>az egész felel a részek életciklusáért, egy rész nem kerülhet két egészhez</td></tr>
+<tr><td>általánosítás / interfész-megvalósítás</td><td><code>extends</code> / <code>implements</code></td></tr>
+<tr><td>enumeráció</td><td><code>enum</code></td></tr>
+<tr><td>asszociációs osztály</td><td>külön osztály, amely mindkét résztvevőre hivatkozik</td></tr>
+</table></div>
+<div class="key"><b>Gondolkodási sorrend az összetett feladatnál:</b> 1) mit követel a szöveg, 2) ebből mit fejez ki a modell (multiplicitás, navigálhatóság, kompozíció, kényszer), 3) a kód betartja-e a modellt, vagy csak nem mond neki ellent. Az „ellentmond” és a „nem kényszeríti ki” két külön dolog.</div>
+`, quiz:[
+ {id:"m1", type:"single", q:"Modell: <code>Maze</code> —— <code>Field</code>, a Field végén nyílhegy, a Maze végén X. Melyik kód illik hozzá a legjobban?",
+  opts:["A Maze-nek van <code>List&lt;Field&gt;</code> mezője, a Fieldnek nincs Maze mezője.","A Fieldnek van Maze mezője, a Maze-nek nincs Field mezője.","Mindkettőnek van mezője a másikra.","A Maze-nek egyetlen Field mezője van."], ans:0,
+  ex:"Csak a Maze → Field irány navigálható, ezért a Maze tárolja a mezőit (több, tehát kollekció). A Field → Maze irány kifejezetten nem navigálható."},
+ {id:"m2", type:"rel", s1:"Egy 1..* asszociációvéghez a modellben nem kell List típusú attribútumot felvenni.", s2:"Az asszociáció tárolásának módja implementációs részlet.", ans:3,
+  ex:"Mindkettő igaz, és a második az indok: a tárolás (lista, tömb stb.) a megvalósításnál dől el, a modellben maga az asszociáció fejezi ki a kapcsolatot."}
+]});
+
+function mini(s){return svg(200,40,s,"sm");}
+CH.push({id:"osszefoglalo", title:"Összefoglaló (puska)", html:`
+<h2>Összefoglaló: a legfontosabb dolgok</h2>
+<p>Ez a fejezet az egész anyag tömör vázlata. A beugró és a kiugró előtt ezt érdemes átfutni. A fejezet végén néhány kérdés a ritkábban előkerülő témákról is van.</p>
+
+<h3>Vonalak és végek</h3>
+<div class="tablewrap"><table class="cheat">
+<tr><th>Jelölés</th><th>Jelentés</th></tr>
+<tr><td>${mini(L(10,24,185,24,{e:"mTri"}))}</td><td><b>Általánosítás.</b> Folytonos vonal, üres háromszög a szülőnél. A gyerek példánya a szülő példánya is.</td></tr>
+<tr><td>${mini(L(10,24,185,24,{d:true,e:"mTri"}))}</td><td><b>Interfész-megvalósítás.</b> Szaggatott vonal, üres háromszög az interfésznél. A megvalósítónak az interfész minden műveletét meg kell valósítania.</td></tr>
+<tr><td>${mini(L(10,24,185,24,{d:true,e:"mOpen"})+T(97,16,"«use»",{c:'st',a:'middle'}))}</td><td><b>Függőség.</b> A nyíl a szállító felé mutat. Fajtái: «use» (használat), «instantiate» (példányosítás), realizáció, absztrakció.</td></tr>
+<tr><td>${mini(L(10,24,185,24,{e:"mOpen"}))}</td><td><b>Navigálható vég.</b> A nyíl irányába hatékonyan elérhetők a példányok. Nem olvasási irány.</td></tr>
+<tr><td>${mini(L(10,24,185,24)+X(172,24))}</td><td><b>Nem navigálható vég.</b> Az elérés nem garantáltan hatékony, de nem feltétlenül lehetetlen.</td></tr>
+<tr><td>${mini(L(10,24,185,24))}</td><td><b>Jelöletlen vég:</b> a navigálhatóság nem specifikált.</td></tr>
+<tr><td>${mini(L(10,24,185,24,{s:"mDF"}))}</td><td><b>Kompozíció.</b> Teli rombusz az egész oldalán. Egy rész csak egy egészhez tartozhat, és vele együtt törlődik.</td></tr>
+<tr><td>${mini(L(10,24,185,24,{s:"mDH"}))}</td><td><b>Megosztott aggregáció.</b> Üres rombusz a csoportosító oldalán. Egy elem több csoportban is lehet.</td></tr>
+<tr><td>${mini(L(10,24,185,24)+`<circle class="dot" cx="179" cy="24" r="4"/>`)}</td><td><b>Vég birtoklása.</b> A pontos véget a <i>túloldali</i> osztály birtokolja (és így az a vég navigálható).</td></tr>
+<tr><td>${mini(L(10,12,185,12)+L(97,12,97,36,{d:true}))}</td><td><b>Asszociációs osztály.</b> A kapcsolathoz tartozó adat. Egy példánya pontosan egy linkhez tartozik.</td></tr>
+<tr><td>${mini(L(10,22,60,22)+BALL(68,22)+L(120,22,150,22)+SOCK(162,22,false))}</td><td><b>Nyalóka:</b> biztosított interfész. <b>Foglalat:</b> elvárt interfész.</td></tr>
+<tr><td>${mini(`<rect class="bx" x="60" y="4" width="130" height="32"/>`+PORT(60,20))}</td><td><b>Port:</b> kis négyzet a komponens határán, nevével ellátott kapcsolódási pont. Több interfésze is lehet.</td></tr>
+</table></div>
+
+<h3>Komponensek</h3>
+<ul class="tight">
+ <li>A komponens cserélhető, a belseje rejtett, csak interfészeken keresztül érintkezik a környezetével. Ez adja a laza csatolást.</li>
+ <li>Belső felépítésben a <code>név : Típus [multiplicitás]</code> elem <b>szerep</b> (part), nem típus. A <code>:LoanManager</code> egy névtelen, LoanManager típusú rész.</li>
+ <li><b>Delegáció:</b> külső port és belső rész között, az irány nem fordulhat meg (biztosított befelé biztosított, elvárt kifelé elvárt). <b>Assembly:</b> két belső rész között. Mindkettő csak belső felépítésben.</li>
+ <li>Külső komponens és egy port interfésze között szaggatott «use» nyíl: használati függőség.</li>
+ <li>Hogy ki biztosít és ki vár el, azt a gömb és a félkör helye dönti el, nem az, hogy ki használja a másikat.</li>
+</ul>
+
+<h3>Multiplicitás</h3>
+<ul class="tight">
+ <li>Egy példányhoz tartozó társak számát a <b>távolabbi</b> vég adja meg.</li>
+ <li><code>*</code> = <code>0..*</code>, <code>1..*</code> = legalább egy (nem „több kell”), <code>0..1</code> = opcionális.</li>
+ <li>Ha nincs feltüntetve, a diagramból semmire nem következtethetünk.</li>
+ <li>A korlát példányonként értendő, és a leszármazottak példányai is beleszámítanak az ős asszociációjába.</li>
+</ul>
+
+<h3>Osztályok és tulajdonságok</h3>
+<ul class="tight">
+ <li>Tulajdonság: <code>[láthatóság] [/] név [: típus] [[mult.]] [= default] [{módosítók}]</code>. Művelet: <code>[láthatóság] név(paraméterek) : visszatérési típus</code>, paraméterirány in, out, inout, return.</li>
+ <li><code>+</code> public, <code>-</code> private, <code>#</code> protected, <code>~</code> package. <code>/</code> származtatott, aláhúzás statikus, dőlt név absztrakt.</li>
+ <li>Módosítók: <code>{readOnly}</code>, <code>{ordered}</code>, <code>{unique}</code>, <code>{id}</code>, <code>{redefines x}</code>. Asszociációvégeken is használhatók.</li>
+ <li>Beépített típusok (Integer, Real, Boolean, String, UnlimitedNatural): matematikai fogalmak, nincs bitméretük.</li>
+ <li>DataType: példányai csak értékükben különböznek. Enumeration: literálokból álló DataType. Constraint: <code>{ }</code> közötti feltétel.</li>
+ <li>Az általánosításban a leszármazott bővíthet vagy ellentmondásmentesen felüldefiniálhat (pl. szűkítheti a multiplicitást). Többszörös általánosítás is megengedett.</li>
+</ul>
+
+<h3>Asszociációk</h3>
+<ul class="tight">
+ <li>Tartós kapcsolat, a példánya a link. Az attribútum és az asszociáció lényegében ugyanazt fejezi ki. Asszociáció mellé nem kell List attribútum.</li>
+ <li>Kompozíció és aggregáció: csak bináris asszociáción, csak az egyik végen, kör nélkül.</li>
+ <li>Végnevek akkor kellenek, ha több asszociáció van ugyanazon osztályok között. Többes asszociáció: rombusz középen, három vagy több résztvevővel.</li>
+</ul>
+
+<h3>Példánymodell</h3>
+<ul class="tight">
+ <li>Aláhúzott <code>név : Típus</code>, mindkettő elhagyható. A link sima vonal, kompozíciónál is.</li>
+ <li>Érvényesség: csak a típusban (vagy őseiben) lévő slot, csak asszociációval összekötött osztályok példányai között link, a multiplicitások minimuma és maximuma betartva, a típusok kényszerei teljesülnek.</li>
+ <li>A hiányzó slot nem hiba (a leírás részleges lehet), az idegen slot hiba. A hiányzó link akkor hiba, ha az alsó határ megkövetelné.</li>
+ <li>Absztrakt osztálynak nincs közvetlen példánya, a leszármazottjénak van.</li>
+</ul>
+
+<h3>Összevetés (kiugró)</h3>
+<ul class="tight">
+ <li>Megvalósítás az osztálydiagramon = biztosított interfész (gömb) a komponensdiagramon. «use» = elvárt interfész (félkör).</li>
+ <li>A delegációnak ahhoz a részhez kell vezetnie, amelynek osztálya megvalósítja vagy használja az interfészt.</li>
+ <li>A kompozíció tulajdonosa az, akit a leírás szerint a részek nem élnek túl („létrehozza és nyilvántartja”).</li>
+ <li>Ami a leírásban „különálló komponens”, az nem lehet belső rész.</li>
+ <li>Kódnál különítsd el: a kód <i>ellentmond</i> a modellnek, vagy csak <i>nem kényszeríti ki</i>.</li>
+</ul>
+
+<h3>Relációanalízis menete</h3>
+<ul class="tight">
+ <li>Először mindkét tagmondatról külön dönts. Ha valamelyik hamis: A, B vagy E, és kész.</li>
+ <li>Ha mindkettő igaz: tényleg az ok magyarázza a másikat? Ha igen, D, ha nem, C.</li>
+ <li>„mert”: a második az ok. „ezért”: az első az ok.</li>
+</ul>
+
+<h3>Ritkábban kérdezett, de az anyag része</h3>
+<ul class="tight">
+ <li><b>Modell ≠ diagram:</b> a diagram a modell egy nézete, nem minden elem jelenik meg rajta.</li>
+ <li><b>Sztereotípia:</b> « » közötti név, az UML elemek kiterjesztése (beépített, pl. «component», «interface», vagy saját, egy profil részeként).</li>
+ <li><b>Csomag:</b> modellelemek csoportosítása, mint a névtér.</li>
+ <li><b>Minősítő (qualifier):</b> kis téglalap a végen, a túloldali példányokat partíciókra osztja. <b>Beágyazott osztály</b> is létezik.</li>
+ <li>Általánosítás asszociációk között, függőség osztályok között is használható.</li>
+ <li><b>Signal és Reception:</b> aszinkron kommunikáció, a küldő nem vár válaszra.</li>
+ <li>Egy művelethez több metódus is tartozhat: így modellezhető a polimorfizmus.</li>
+ <li>Interfésznek lehet attribútuma, és interfészek között asszociáció is lehet, de ezekkel óvatosan.</li>
+ <li><b>Dekompozíció:</b> fizikai (milyen alkatrész) vagy logikai (mit csinál). <b>Részletességi szintek:</b> fogalmi modell, kezdeti analízis, részletes implementáció.</li>
+ <li>Az UML „generalization”-nek hívja, nem „inheritance”-nek, mert nem kötődik programozási nyelvhez.</li>
+</ul>
+`, quiz:[
+ {id:"g1", type:"rel", s1:"Ha egy osztály egyik diagramon sem jelenik meg, akkor a modellben sem létezik.", s2:"A diagram a modell egy nézete, és a modell elemeinek csak egy részét mutatja.", ans:1,
+  ex:"A második igaz, épp ezért hamis az első: a modellben lehetnek olyan elemek, amelyek egyik diagramon sem szerepelnek."},
+ {id:"g2", type:"single", q:"Mit jelöl egy modellelemen a « » jelek közé írt név?",
+  opts:["Sztereotípiát, vagyis az elem kiterjesztését egy speciális szerepre.","Megjegyzést, amelynek nincs jelentése a modellben.","Kényszert, amelyet minden érvényes modellnek teljesítenie kell.","Az elem láthatóságát."], ans:0,
+  ex:"A « » a sztereotípia jele (pl. «interface», «component», «use»). A kényszer kapcsos zárójelben van."},
+ {id:"g3", type:"single", q:"A CarFactory osztályból szaggatott nyíl mutat a Car osztályra «instantiate» címkével. Mit jelent?",
+  opts:["Függőséget: a CarFactory létrehozza a Car példányait.","A Car a CarFactory leszármazottja.","A Car példányai a CarFactory részei (kompozíció).","Navigálható asszociációt a CarFactory-ból a Car felé."], ans:0,
+  ex:"Szaggatott vonal nyitott nyílheggyel függőség. Az «instantiate» a függőség egyik fajtája: a kliens példányokat hoz létre a szállítóból."},
+ {id:"g4", type:"multi", q:"Melyik állítások igazak?",
+  opts:["Egy osztálynak több általánosítása is lehet.","A csomag modellelemek csoportosítására szolgál, hasonlóan a névterekhez.","A minősítő (qualifier) a túloldali példányokat partíciókra osztja.","Az UML az általánosítást azért hívja generalizationnek, mert pontosan a Java-öröklést jelenti.","Egy művelethez csak egy metódus tartozhat."], ans:[0,1,2],
+  ex:"Az UML szándékosan nem köti az általánosítást egy programozási nyelvhez. Egy művelethez több metódus is tartozhat, ez a polimorfizmus modellezése."}
+]});
+
+CH.push({id:"jeloles-gyakorlo", title:"Jelölés-gyakorló", html:`
+<h2>Jelölés-gyakorló</h2>
+<p>Gyors felismerés, mint a kvízben: megjelenik egy jelölés, válaszd ki, mit jelent. Annyiszor csinálhatod, ahányszor akarod.</p>
+<div class="drill" id="drill"></div>
+`, quiz:[]});
+
+CH.push({id:"proba-beugro", title:"Próba beugró (osztály)", html:`
+<h2>Próba beugró</h2>
+<p>Mint az éles beugróban: 4 kérdés, mind ugyanarra a diagramra vonatkozik, és a diagram minden kérdésnél megismétlődik. Próbáld segédanyag nélkül.</p>
+`, quizTitle:"Kérdések", quiz:[
+ {id:"b1", type:"single", fig:fig(libDiagram), q:"A modell szerint legfeljebb hány Példányt kölcsönözhet egy Tag egyszerre?",
+  opts:["1","5","Korlátlan számút","A diagramból nem állapítható meg"], ans:1,
+  ex:"Egy Taghoz tartozó Példányok számát a Tagtól <b>távolabbi</b>, Példány felőli vég adja: 0..5. A 0..1 azt mondja meg, hogy egy Példányt egyszerre legfeljebb egy Tag kölcsönözhet."},
+ {id:"b2", type:"multi", fig:fig(libDiagram), q:"Melyik állítások igazak a modellre?",
+  opts:["Ha egy Könyvtár példányt törlünk, a hozzá tartozó Példányok is törlődnek.","Egy Példány egyszerre két Könyvtárhoz is tartozhat.","Egy Példányból hatékonyan elérhető a hozzá tartozó Könyv.","Egy Könyvből hatékonyan elérhetők a Példányai.","A Szemely osztálynak lehet közvetlen példánya.","Minden Könyvnek legalább egy Példánya van."], ans:[0,2,5],
+  ex:"Kompozíció: a Könyvtár törlésével a Példányok is törlődnek, és egy Példány csak egy Könyvtárhoz tartozhat. A Példány → Könyv irány navigálható (nyíl), a Könyv → Példány nem (X). A dőlt Szemely absztrakt. A Példány felőli 1..* miatt minden Könyvnek legalább egy Példánya van."},
+ {id:"b3", type:"rel", fig:fig(libDiagram), s1:"Egy Kolcsonzes példányhoz pontosan egy Tag tartozik.", s2:"A Tag–Peldany asszociáció Tag felőli végén 0..1 a multiplicitás.", ans:2,
+  ex:"Mindkettő igaz, de nem a 2. az indok. Egy asszociációs osztály példánya pontosan <b>egy linkhez</b> tartozik, és egy link pontosan egy Tagot és egy Példányt köt össze. A 0..1 azt mondja meg, hány Tag kölcsönözhet egy Példányt, nem azt, hány Tag tartozik egy Kölcsönzéshez."},
+ {id:"b4", type:"multi", fig:fig(libDiagram)+fig(svg(720,200,
+    B(20,20,200,"t1 : Tag",['nev = "Kiss Anna"','email = "anna@pelda.hu"'],{ul:true})+
+    B(300,20,180,"p1 : Peldany",['leltariSzam = "L-042"'],{ul:true})+
+    B(300,140,180,"k1 : Konyvtar",[],{ul:true})+
+    B(560,20,140,"kv1 : Konyv",['cim = "Dűne"'],{ul:true})+
+    B(560,140,140,"kv2 : Konyv",['cim = "Solaris"'],{ul:true})+
+    L(220,45,300,45)+L(480,45,560,45)+L(390,71,390,140))),
+  q:"A második ábra egy példánymodell az első osztálymodellhez. Melyek a hibái?",
+  opts:["A t1-nek van email slotja, pedig sem a Tag, sem a Szemely nem definiál ilyet.","A kv2-nek nincs egyetlen Példánya sem.","A t1-nek nincs aktivKolcsonzes slotja.","A t1 típusa Tag, pedig a Szemely absztrakt.","A p1 kapcsolódik a k1 Könyvtárhoz."], ans:[0,1],
+  ex:"Idegen slot (email) hiba, és a kv2 sérti a Példány felőli 1..* alsó határt. A hiányzó slot nem hiba, mert a példányleírás lehet részleges. Az absztrakt ős leszármazottjának lehet példánya. A p1–k1 link kötelező is, a Könyvtár felőli 1 miatt."}
+]});
+
+const shopDiagram = svg(800,330,
+  COMP(20,70,150,60,"ClientApp")+PORT(170,100)+L(177,100,188,100)+SOCK(200,100,false)+L(212,100,260,100,{d:true,e:"mOpen"})+BALL(270,100)+L(278,100,293,100)+T(270,80,"OrderService",{a:'middle'})+T(236,120,"«use»",{c:'st',a:'middle'})+
+  `<rect class="bx" x="300" y="20" width="400" height="290"/>`+L(300,52,700,52)+T(500,41,"«component» ShopSystem",{c:'nm',a:'middle'})+
+  PORT(300,100)+L(307,100,412,100)+BALL(420,100)+L(428,100,443,100)+
+  `<rect class="bx" x="450" y="75" width="190" height="50"/>`+T(545,105,":OrderManager",{c:'nm',a:'middle'})+PORT(450,100)+
+  `<rect class="bx" x="450" y="195" width="190" height="50"/>`+T(545,225,":Inventory",{c:'nm',a:'middle'})+
+  PORT(545,125)+L(545,132,545,150)+`<path class="ln" d="M533,162 A12,12 0 0 1 557,162"/>`+BALL(545,162)+L(545,170,545,188)+PORT(545,195)+T(528,166,"StockQuery",{a:'end'})+
+  PORT(640,220)+L(647,220,693,220)+PORT(700,220)+L(707,220,725,220)+SOCK(737,220,false)+T(737,198,"Warehouse",{a:'middle'})
+);
+
+CH.push({id:"proba-beugro-2", title:"Próba beugró (komponens)", html:`
+<h2>Próba beugró: komponensdiagram</h2>
+<p>Az éles beugrók egy része komponensdiagramra kérdez: belső felépítés, portok, «use» függőség, delegáció és assembly. Ez a sor ugyanebben a stílusban készült, de más diagrammal.</p>
+<div class="key"><b>Olvasási sorrend.</b> 1) Minden ball-and-socketnél nézd meg, melyik oldalon van a félkör (az elvárja) és melyiken a gömb (az biztosítja). 2) Ha a vonal a külső porttól egy belső részhez megy, az delegáció, ha két belső rész között van, assembly. 3) Ha egy külső komponens szaggatott «use» nyíllal mutat egy nyalókára, az használati függőség.</div>
+`, quizTitle:"Kérdések", quiz:[
+ {id:"c1", type:"rel", fig:fig(shopDiagram), s1:"Az :Inventory biztosítja a StockQuery interfészt.", s2:"Az :OrderManager és az :Inventory között assembly összeköttetés van.", ans:2,
+  ex:"Mindkét fele igaz: a gömb az :Inventory oldalán van, a félkör az :OrderManager oldalán, és két belső rész között ball-and-socket assemblyt jelent. A következtetés viszont hamis: nem azért biztosítja, mert assembly van, hanem fordítva, azért kapcsolódhatnak assemblyvel, mert az egyik biztosítja, a másik elvárja."},
+ {id:"c2", type:"single", fig:fig(shopDiagram), q:"Milyen kapcsolat van a ClientApp és a ShopSystem portján látható OrderService interfész között?",
+  opts:["Asszociáció.","Használati («use») függőség.","Interfész-megvalósítás (realization).","Delegációs összeköttetés."], ans:1,
+  ex:"Szaggatott vonal nyitott nyílheggyel, «use» címkével: használati függőség. A ClientApp elvárja (félkör a portján), és használja a ShopSystem által biztosított interfészt. Delegáció csak a komponens belsejében, a külső port és egy belső rész között lehet."},
+ {id:"c3", type:"rel", fig:fig(shopDiagram), s1:"A ShopSystem a jobb oldali portján keresztül biztosítja a Warehouse interfészt.", s2:"Az :Inventory és a ShopSystem jobb oldali portja között delegációs összeköttetés van.", ans:1,
+  ex:"Az első fele hamis: a Warehouse-nál félkör van, tehát a ShopSystem <b>elvárja</b> ezt az interfészt a környezetétől. A második fele igaz: belső rész és külső port között delegáció van. Itt az :Inventory elvárása delegálódik kifelé, az irány nem fordul meg."},
+ {id:"c4", type:"multi", fig:fig(shopDiagram), q:"Az ábrán látható komponensdiagram alapján melyik állítások igazak?",
+  opts:["A ClientApp közvetlenül az :OrderManager részhez kapcsolódik.","Az :OrderManager elvárja a StockQuery interfészt.","A ShopSystem a környezetétől elvárja a Warehouse interfészt.","A bal oldali külső port és az :OrderManager közötti vonal assembly összeköttetés.","A ShopSystem határán lévő kis négyzetek portok."], ans:[1,2,4],
+  ex:"A ClientApp a ShopSystem portjához kapcsolódik, nem közvetlenül a belső részhez. A külső port és a belső rész közötti vonal delegáció, nem assembly. Az :OrderManager oldalán félkör van (elvárja a StockQuery-t), a Warehouse-nál is félkör (a ShopSystem elvárja)."}
+]});
+
+CH.push({id:"proba-kiugro", title:"Próba kiugró (kód)", html:`
+<h2>Próba kiugró: összetett feladat</h2>
+<p>Vesd össze a szöveges leírást, a modellt és a kódot, majd döntsd el az állításokról, hogy igazak-e.</p>
+<div class="spec"><b>Leírás.</b> Egy rendelésnek van dátuma és legalább egy tétele. Minden tétel pontosan egy rendeléshez tartozik, és a rendeléssel együtt megszűnik. A rendelésből el kell tudni érni a tételeit. A tételnél a mennyiséget tároljuk, amely pozitív egész.</div>
+${fig(rendDiagram)}
+<pre>public class Rendeles {
+    private LocalDate datum;
+    private final List&lt;Tetel&gt; tetelek = new ArrayList&lt;&gt;();
+
+    public Rendeles(LocalDate datum, Tetel elso) {
+        this.datum = datum;
+        tetelek.add(Objects.requireNonNull(elso));
+    }
+    public void hozzaad(Tetel t) { tetelek.add(t); }
+}
+
+public class Tetel {
+    private int mennyiseg;
+    public Tetel(int mennyiseg) {
+        if (mennyiseg &lt;= 0) throw new IllegalArgumentException();
+        this.mennyiseg = mennyiseg;
+    }
+}</pre>
+`, quizTitle:"Állítások", quiz:[
+ {id:"x1", type:"single", q:"A modell a leírás minden követelményét kifejezi.", opts:["Igaz","Hamis"], ans:0,
+  ex:"Az 1..* a „legalább egy tétel”, a kompozíció a „pontosan egy rendeléshez tartozik és vele együtt megszűnik”, a nyíl a Tétel felé az elérhetőség, a kényszer a pozitív mennyiség."},
+ {id:"x2", type:"single", q:"Mivel a Tetel osztályban nincs Rendeles típusú mező, a kód ellentmond a modellnek.", opts:["Igaz","Hamis"], ans:1,
+  ex:"A modellben a Rendeles felőli vég navigálhatósága nem specifikált (nincs se nyíl, se X), ezért a hiányzó visszafelé mutató referencia nem ellentmondás."},
+ {id:"x3", type:"single", q:"A kód alapján nem jöhet létre tétel nélküli Rendeles objektum.", opts:["Igaz","Hamis"], ans:0,
+  ex:"Az egyetlen konstruktor kér egy első tételt, és a requireNonNull miatt az nem lehet null. Eltávolító metódus nincs."},
+ {id:"x4", type:"single", q:"A kód kikényszeríti, hogy egy Tetel objektum legfeljebb egy Rendeleshez tartozzon.", opts:["Igaz","Hamis"], ans:1,
+  ex:"Ugyanazt a Tetel objektumot átadhatjuk két különböző Rendeles konstruktorának vagy hozzaad metódusának. A kód tehát nem kényszeríti ki a kompozíció „egy rész csak egy egészhez” szabályát, bár nem is mond neki ellent szerkezetileg."}
+]});
+
+const lockerComp = svg(970,330,
+  COMP(20,190,150,60,"CourierApp")+PORT(170,220)+L(177,220,250,220)+SOCK(262,220,false)+BALL(262,220)+L(270,220,293,220)+T(262,198,"IDeposit",{a:'middle'})+
+  `<rect class="bx" x="300" y="20" width="400" height="290"/>`+L(300,52,700,52)+T(500,41,"«component» LockerSystem",{c:'nm',a:'middle'})+
+  `<rect class="bx" x="450" y="75" width="190" height="50"/>`+T(545,105,":ParcelRegistry",{c:'nm',a:'middle'})+
+  `<rect class="bx" x="450" y="195" width="190" height="50"/>`+T(545,225,":DoorController",{c:'nm',a:'middle'})+
+  PORT(300,220)+L(307,220,412,220)+BALL(420,220)+L(428,220,443,220)+PORT(450,220)+
+  PORT(545,125)+L(545,132,545,152)+BALL(545,160)+`<path class="ln" d="M533,160 A12,12 0 0 0 557,160"/>`+L(545,172,545,188)+PORT(545,195)+T(528,164,"IRegistry",{a:'end'})+
+  PORT(640,100)+L(647,100,693,100)+PORT(700,100)+L(707,100,728,100)+BALL(736,100)+SOCK(736,100,true)+L(748,100,773,100)+T(736,80,"ISms",{a:'middle'})+
+  COMP(780,70,170,60,"SmsGateway")+PORT(780,100)
+);
+const lockerClass = svg(800,310,
+  `<rect class="bx" x="20" y="44" width="570" height="120"/>`+`<path class="bx" d="M20,20 H140 L150,44 H20 Z"/>`+T(28,37,"LockerSystem",{c:'nm'})+
+  B(40,60,150,"Parcel",["code : String","since : DateTime"])+
+  B(400,60,170,"ParcelRegistry",[],{nb:true})+
+  L(400,73,190,73,{s:"mDF",e:"mOpen"})+M(392,66,"1","","end")+M(198,66,"0..*")+
+  B(230,118,160,"DoorController",[],{nb:true})+
+  B(20,230,240,"IDeposit",["depositParcel(code : String)"],{st:"interface",it:true})+
+  B(290,230,220,"IRegistry",["register(code : String)"],{st:"interface",it:true})+
+  B(540,230,250,"ISms",["send(phone : String, text : String)"],{st:"interface",it:true})+
+  L(270,144,140,230,{d:true,e:"mTri"})+
+  L(340,144,380,230,{d:true,e:"mOpen"})+T(372,192,"«use»",{c:'st'})+
+  L(470,86,420,230,{d:true,e:"mTri"})+
+  L(530,86,660,230,{d:true,e:"mOpen"})+T(612,165,"«use»",{c:'st'})
+);
+
+CH.push({id:"proba-kiugro-osszevetes", title:"Próba kiugró (összevetés)", html:`
+<h2>Próba kiugró: leírás, komponens- és osztálydiagram</h2>
+<p>Az éles kiugró összetett feladata ilyen: egy leírás, egy komponensdiagram és a komponens belsejét mutató osztálydiagram. A három között kell ellentmondást keresni.</p>
+<div class="key"><b>Megfeleltetés a két diagram között.</b> Ha egy osztály <b>megvalósít</b> egy interfészt (szaggatott vonal, üres háromszög), akkor a komponensdiagramon a neki megfelelő rész <b>biztosítja</b> (gömb). Ha <b>«use»</b> függőséggel kapcsolódik hozzá, akkor <b>elvárja</b> (félkör). A külső porttól induló delegációnak ahhoz a részhez kell vezetnie, amelyik osztálya az interfészt megvalósítja vagy használja. A kompozíció tulajdonosa az legyen, akit a leírás szerint a részek nem élnek túl.</div>
+<div class="spec"><b>Leírás.</b> A csomagautomata-rendszer (LockerSystem) két részből áll: az ajtókat vezérlő DoorController-ből és a csomagokat nyilvántartó ParcelRegistry-ből. A futáralkalmazás (CourierApp) különálló komponens, amely az IDeposit interfészen keresztül jelzi a rendszernek, hogy csomagot helyez el. Az ajtóvezérlő az IRegistry interfészen keresztül rögzíti a csomagot (Parcel). A csomagokat a nyilvántartó hozza létre és tartja nyilván, a nyilvántartó nélkül nem léteznek. Az átvételről szóló értesítést a külső SmsGateway ISms interfészén keresztül küldjük ki.</div>
+<p>A rendszer komponensdiagramja:</p>
+${fig(lockerComp)}
+<p>A LockerSystem belső felépítése: az osztályai a LockerSystem csomagban vannak, az interfészei azon kívül.</p>
+${fig(lockerClass)}
+`, quizTitle:"Részkérdések", quiz:[
+ {id:"v1", type:"multi", q:"Melyik állítások igazak a komponensdiagram, az osztálydiagram és a leírás viszonyára?",
+  opts:["A komponensdiagramon az ISms interfészt a LockerSystem biztosítja, pedig a leírás és az osztálydiagram szerint el kellene várnia.","A leírás alapján a CourierApp-nak a LockerSystem részének kellene lennie.","A :DoorController és a :ParcelRegistry az IRegistry interfészen keresztül kapcsolódik, ami megfelel az osztálydiagramnak.","Az IDeposit delegációs összeköttetése a :DoorController részhez vezet, ami megfelel az osztálydiagramnak.","Az osztálydiagram alapján a :ParcelRegistry résznek biztosítania kellene az ISms interfészt."], ans:[0,2,3],
+  ex:"Az ISms-nél a gömb a LockerSystem oldalán van, de a ParcelRegistry csak «use»-zal kapcsolódik hozzá, és a leírás szerint is egy külső szolgáltatást használunk: ez az elhelyezett hiba. A CourierApp a leírás szerint különálló komponens. Az IRegistry-t a DoorController használja és a ParcelRegistry valósítja meg, ez egyezik a ball-and-sockettel. Az IDeposit-ot a DoorController valósítja meg, és a delegáció is hozzá vezet."},
+ {id:"v2", type:"rel", s1:"Az osztálydiagram megfelel a leírásnak a Parcel tekintetében.", s2:"Az osztálydiagramon a Parcel a ParcelRegistry osztállyal áll kompozíciós kapcsolatban.", ans:3,
+  ex:"Mindkettő igaz, és a második az indok: a leírás szerint a nyilvántartó hozza létre a csomagokat, és nélküle nem léteznek. Ezt pont a ParcelRegistry felőli teli rombusz fejezi ki."},
+ {id:"v3", type:"rel", s1:"A LockerSystem biztosítja az IDeposit interfészt.", s2:"Az osztálydiagramon a DoorController «use» függőséggel kapcsolódik az IRegistry interfészhez.", ans:2,
+  ex:"Mindkettő igaz, de semmi közük egymáshoz. Az IDeposit-ot azért biztosítja a rendszer, mert a portján gömb van (és a DoorController megvalósítja), nem az IRegistry használata miatt."},
+ {id:"v4", type:"multi", q:"Melyik állítások igazak az osztálydiagram alapján?",
+  opts:["A ParcelRegistry osztálynak meg kell valósítania a register műveletet.","A DoorController osztálynak meg kell valósítania a register műveletet.","A Parcel példányok a ParcelRegistry példány törlése után is megmaradnak.","Egy Parcel példány pontosan egy ParcelRegistry példányhoz tartozik.","A DoorController osztálynak meg kell valósítania a depositParcel műveletet."], ans:[0,3,4],
+  ex:"Aki megvalósít egy interfészt, annak a műveleteit is meg kell valósítania: a ParcelRegistry az IRegistry-t (register), a DoorController az IDeposit-ot (depositParcel). A DoorController az IRegistry-t csak használja. A kompozíció miatt a Parcel a tulajdonossal együtt törlődik, és a ParcelRegistry felőli 1 miatt pontosan egyhez tartozik."}
+]});
+
+const rstuModel = svg(430,190,
+  B(60,30,100,"Class R",[],{nb:true})+B(280,30,100,"Class S",[],{nb:true})+
+  B(60,140,100,"Class U",[],{nb:true})+B(280,140,100,"Class T",[],{nb:true})+
+  L(160,43,280,43)+M(168,36,"1..2")+M(272,60,"0..1","","end")+
+  L(110,140,110,56,{e:"mTri"})+
+  L(330,56,330,140,{s:"mDF"})+M(338,74,"1")+M(338,134,"1..*")+
+  L(160,153,280,153)+M(168,146,"0..3")+M(272,170,"0..1","","end"), "sm");
+const rstuInst = svg(490,170,
+  B(20,20,110,"r1 : Class R",[],{nb:true,ul:true})+B(180,20,110,"s1 : Class S",[],{nb:true,ul:true})+
+  B(340,20,110,"t1 : Class T",[],{nb:true,ul:true})+B(20,90,110,"u1 : Class U",[],{nb:true,ul:true})+
+  B(340,90,110,"t2 : Class T",[],{nb:true,ul:true})+
+  L(130,33,180,33)+L(290,33,340,33)+L(290,40,340,100)+L(130,100,180,40)+L(130,110,340,110)+
+  P("M75,116 V150 H470 V33 H450"), "sm");
+
+CH.push({id:"proba-kiugro-peldany", title:"Próba kiugró (példánymodell)", html:`
+<h2>Próba kiugró: osztály- és példánymodell</h2>
+<p>A kiugró másik feladattípusa: bal oldalon egy osztálymodell, jobb oldalon egy példánymodell, és minden állítást a relációanalízis kulcsával kell jellemezni. Itt „mert” és „ezért” is előfordul.</p>
+<div class="key"><b>Ellenőrző lista minden linkhez.</b> 1) Van asszociáció a két osztály (vagy az őseik) között? A leszármazott példánya az ős asszociációiban is részt vehet. 2) Minden objektumnál számold meg, hány linkje van az adott asszociáción, és vesd össze a <b>túloldali</b> multiplicitással, beleértve a leszármazottak példányait is. 3) A link mindig sima vonal, a kompozíció rombusza nem jelenik meg a példánymodellben.</div>
+${fig(`<div style="display:flex;flex-wrap:wrap;gap:16px"><div style="flex:1 1 320px"><div class="cap" style="margin:0 0 4px">Osztálymodell</div>${rstuModel}</div><div style="flex:1 1 360px"><div class="cap" style="margin:0 0 4px">Példánymodell</div>${rstuInst}</div></div>`)}
+`, quizTitle:"Állítások", quiz:[
+ {id:"w1", type:"rel", s1:"Az s1 példányhoz nem kapcsolódhatna r1 és u1 is.", s2:"Az osztálydiagram szerint egy S példányhoz legfeljebb egy R példány tartozhat.", ans:4,
+  ex:"Egy S-hez a túloldali 1..2 szerint egy vagy két R tartozhat, és az u1 is R, mert U az R leszármazottja. Tehát s1-hez kapcsolódhat r1 és u1 is, és a második fele is hamis."},
+ {id:"w2", type:"rel", s1:"Az u1 példány nem kapcsolódhatna s1-hez.", s2:"Class U és Class S között nincs közvetlen asszociáció.", ans:1,
+  ex:"A második igaz, közvetlen asszociáció tényleg nincs. De az u1 R-példány is, ezért részt vehet az R–S asszociációban, így az első fele hamis."},
+ {id:"w3", type:"rel", s1:"Class U egy példányához legfeljebb egy Class T példány kapcsolódhat.", s2:"A példánymodellben hibás, hogy u1 két T példányhoz is kapcsolódik.", conj:"ezért", ans:3,
+  ex:"Egy U-hoz a T felőli 0..1 szerint legfeljebb egy T tartozhat. Az u1-nek két T-linkje van (t1 és t2), ezért a példánymodell valóban hibás, és pont emiatt."},
+ {id:"w4", type:"rel", s1:"Az osztálydiagram szerint Class S egy példányához több Class T példánynak kell tartoznia.", s2:"Helyes, hogy s1-hez két T példány is kapcsolódik.", conj:"ezért", ans:1,
+  ex:"Az 1..* legalább egyet jelent, nem többet, ezért az első fele hamis. A második igaz: két T belefér az 1..*-ba."},
+ {id:"w5", type:"rel", s1:"Class R egy példányához legfeljebb egy Class S példány kapcsolódhat.", s2:"Az u1 már nem kapcsolódhatna s1-hez.", conj:"ezért", ans:0,
+  ex:"Az első igaz (S felőli 0..1). De a korlát példányonként értendő: r1-nek és u1-nek külön-külön lehet legfeljebb egy S-e, így u1 kapcsolódhat s1-hez. A második fele hamis."},
+ {id:"w6", type:"rel", s1:"Az s1 és t1 közötti link grafikus ábrázolása hibás.", s2:"Class S és Class T között kompozíció van.", ans:1,
+  ex:"A második igaz, de a példánymodellben a link sima vonal, a rombusz nem jelenik meg rajta. Az ábrázolás tehát helyes, az első fele hamis."}
+]});
+
+/* ---------- Progress ---------- */
+const KEY="uml-lab5-progress-v1";
+let solved={};
+try{ solved=JSON.parse(localStorage.getItem(KEY)||"{}")||{}; }catch(e){ solved={}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(solved)); }catch(e){} }
+
+/* ---------- Nav ---------- */
+function renderNav(current){
+  const ol=document.getElementById("navlist");
+  ol.innerHTML=CH.map(c=>{
+    const n=c.quiz.length, d=c.quiz.filter(q=>solved[q.id]).length;
+    const cnt=n?`<span class="cnt${d===n?' done':''}">${d===n?'✓ ':''}${d}/${n}</span>`:'';
+    return `<li><a href="#${c.id}"${c.id===current?' aria-current="page"':''}>${c.title}${cnt}</a></li>`;
+  }).join("");
+}
+
+/* ---------- Quiz ---------- */
+function renderQ(q,i){
+  const multi=q.type==="multi";
+  const opts=q.type==="rel"?REL:q.opts;
+  const name="q_"+q.id;
+  let h=`<div class="q" data-id="${q.id}"><div class="qn">${i+1}. kérdés${q.type==="rel"?", relációanalízis":multi?", all-or-nothing":""}</div>`;
+  if(q.fig) h+=q.fig;
+  if(q.type==="rel"){
+    h+=`<ul class="stmts"><li><b>1.</b> ${q.s1}</li><li class="mert">${q.conj||"mert"}</li><li><b>2.</b> ${q.s2}</li></ul>`;
+  } else {
+    h+=`<div class="qt">${q.q}</div>`;
+  }
+  if(multi) h+=`<div class="hint">Jelöld be az összes igaz állítást.</div>`;
+  h+=opts.map((o,k)=>`<label class="opt"><input type="${multi?'checkbox':'radio'}" name="${name}" value="${k}"><span>${o}</span><span class="tag"></span></label>`).join("");
+  h+=`<div class="btnrow"><button class="btn chk">Ellenőrzés</button><button class="btn ghost rst">Újra</button></div><div class="fb" aria-live="polite"></div></div>`;
+  return h;
+}
+function bindQ(el,q){
+  const fb=el.querySelector(".fb");
+  el.querySelector(".chk").addEventListener("click",()=>{
+    const sel=[...el.querySelectorAll("input:checked")].map(x=>+x.value);
+    if(!sel.length){ fb.className="fb show wrong"; fb.innerHTML="Jelölj meg legalább egy választ."; return; }
+    const ans=Array.isArray(q.ans)?q.ans:[q.ans];
+    const ok=sel.length===ans.length && sel.every(s=>ans.includes(s));
+    el.querySelectorAll(".opt").forEach((lab,k)=>{
+      lab.classList.remove("ok","bad","miss");
+      const t=lab.querySelector(".tag"); t.textContent="";
+      const isA=ans.includes(k), isS=sel.includes(k);
+      if(isA&&isS){lab.classList.add("ok"); t.textContent="helyes";}
+      else if(!isA&&isS){lab.classList.add("bad"); t.textContent="rossz";}
+      else if(isA&&!isS){lab.classList.add("miss"); t.textContent="ez is kellett";}
+    });
+    fb.className="fb show "+(ok?"good":"wrong");
+    fb.innerHTML=`<span class="res">${ok?"Helyes.":"Nem pontos."}</span> ${q.ex}`;
+    if(ok && !solved[q.id]){ solved[q.id]=1; save(); renderNav(currentId); }
+  });
+  el.querySelector(".rst").addEventListener("click",()=>{
+    el.querySelectorAll("input").forEach(x=>x.checked=false);
+    el.querySelectorAll(".opt").forEach(l=>{l.classList.remove("ok","bad","miss"); l.querySelector(".tag").textContent="";});
+    fb.className="fb"; fb.innerHTML="";
+  });
+}
+
+/* ---------- Drill ---------- */
+const DR=[
+ {a:"Általánosítás", s:B(10,12,60,"Szulo",[],{nb:true})+B(160,12,60,"Gyerek",[],{nb:true})+L(160,25,70,25,{e:"mTri"}), e:"Folytonos vonal, üres háromszög a szülőnél."},
+ {a:"Interfész-megvalósítás", s:B(10,12,60,"«i» I",[],{nb:true})+B(160,12,60,"Impl",[],{nb:true})+L(160,25,70,25,{d:true,e:"mTri"}), e:"Szaggatott vonal, üres háromszög az interfésznél."},
+ {a:"Függőség", s:B(10,12,60,"Kliens",[],{nb:true})+B(160,12,60,"Szallito",[],{nb:true})+L(70,25,160,25,{d:true,e:"mOpen"}), e:"Szaggatott vonal, nyitott nyílhegy a szállító felé."},
+ {a:"Navigálható asszociációvég", s:B(10,12,60,"A",[],{nb:true})+B(160,12,60,"B",[],{nb:true})+L(70,25,160,25,{e:"mOpen"}), e:"Folytonos vonal, nyitott nyílhegy: A-ból B hatékonyan elérhető."},
+ {a:"Kompozíció", s:B(10,12,60,"Egesz",[],{nb:true})+B(160,12,60,"Resz",[],{nb:true})+L(70,25,160,25,{s:"mDF"}), e:"Teli rombusz az egész felőli végen."},
+ {a:"Megosztott aggregáció", s:B(10,12,60,"Csoport",[],{nb:true})+B(160,12,60,"Elem",[],{nb:true})+L(70,25,160,25,{s:"mDH"}), e:"Üres rombusz a csoportosító felőli végen."},
+ {a:"Nem navigálható asszociációvég", s:B(10,12,60,"A",[],{nb:true})+B(160,12,60,"B",[],{nb:true})+L(70,25,160,25)+X(148,25), e:"Az X a vég mellett: abba az irányba nem navigálható."},
+ {a:"Biztosított interfész", s:COMP(10,5,110,45,"K")+L(120,27,170,27)+BALL(178,27), e:"Nyalóka: a komponens nyújtja ezt az interfészt."},
+ {a:"Elvárt interfész", s:COMP(10,5,110,45,"K")+L(120,27,166,27)+SOCK(178,27,false), e:"Foglalat: a komponens használni szeretné ezt az interfészt."},
+ {a:"Port", s:COMP(40,5,150,45,"K")+PORT(40,27), e:"Kis négyzet a komponens határán: nevesített kapcsolódási pont."},
+ {a:"Példány (InstanceSpecification)", s:B(40,8,150,"k1 : Kurzus",[],{nb:true,ul:true}), e:"Aláhúzott név : Típus."},
+ {a:"Absztrakt osztály", s:B(60,8,110,"Alakzat",[],{nb:true,it:true}), e:"Dőlt betűs név (vagy {abstract})."},
+ {a:"Asszociációvég birtoklása", s:B(10,12,60,"A",[],{nb:true})+B(160,12,60,"B",[],{nb:true})+L(70,25,160,25)+`<circle class="dot" cx="154" cy="25" r="4"/>`, e:"Pont a vég mellett: a túloldali osztály birtokolja a véget."},
+ {a:"Asszociációs osztály", s:B(10,5,50,"A",[],{nb:true})+B(170,5,50,"B",[],{nb:true})+L(60,17,170,17)+L(115,17,115,32,{d:true})+B(85,32,60,"C",[],{nb:true}), e:"Szaggatott vonal az asszociációtól egy osztályhoz."},
+ {a:"Származtatott tulajdonság", s:B(40,4,150,"Szamla",["/osszeg : Real"]), e:"A / jel a név előtt: számított érték."},
+ {a:"Statikus tag", s:B(40,4,150,"Szamlalo",["_+ szamlalo : Integer"]), e:"Aláhúzott attribútum vagy művelet: osztályszintű."}
+];
+let drillState={score:0,total:0,cur:null};
+function drillNext(){
+  const el=document.getElementById("drill"); if(!el) return;
+  const item=DR[Math.floor(Math.random()*DR.length)];
+  const others=DR.filter(d=>d.a!==item.a).sort(()=>Math.random()-.5).slice(0,3).map(d=>d.a);
+  const choices=[item.a,...others].sort(()=>Math.random()-.5);
+  drillState.cur=item;
+  el.innerHTML=`<div class="score">Eredmény: ${drillState.score} / ${drillState.total}</div>
+   <div class="sym">${svg(230,62,item.s,"sm")}</div>
+   <div class="grid">${choices.map(c=>`<button class="ch">${c}</button>`).join("")}</div>
+   <div class="ex" aria-live="polite"></div>
+   <div class="btnrow"><button class="btn" id="dnext">Következő</button></div>`;
+  let answered=false;
+  el.querySelectorAll(".ch").forEach(b=>b.addEventListener("click",()=>{
+    if(answered) return; answered=true; drillState.total++;
+    const ok=b.textContent===item.a; if(ok) drillState.score++;
+    el.querySelectorAll(".ch").forEach(x=>{ if(x.textContent===item.a) x.classList.add("ok"); });
+    if(!ok) b.classList.add("bad");
+    el.querySelector(".score").textContent=`Eredmény: ${drillState.score} / ${drillState.total}`;
+    el.querySelector(".ex").innerHTML=`<b>${ok?"Helyes.":"Nem ez."}</b> ${item.e}`;
+  }));
+  el.querySelector("#dnext").addEventListener("click",drillNext);
+}
+
+/* ---------- Chapter render ---------- */
+let currentId=CH[0].id;
+function show(id){
+  const idx=Math.max(0,CH.findIndex(c=>c.id===id));
+  const c=CH[idx]; currentId=c.id;
+  let h=c.html;
+  if(c.quiz.length){
+    h+=`<section class="quiz"><h3>${c.quizTitle||"Ellenőrző kérdések"}</h3>${c.quiz.map(renderQ).join("")}</section>`;
+  }
+  const prev=CH[idx-1], next=CH[idx+1];
+  h+=`<div class="pager">${prev?`<a class="btn ghost" href="#${prev.id}" style="text-decoration:none">Előző: ${prev.title}</a>`:'<span></span>'}${next?`<a class="btn" href="#${next.id}" style="text-decoration:none">Következő: ${next.title}</a>`:''}</div>`;
+  const content=document.getElementById("content");
+  content.innerHTML=h;
+  content.querySelectorAll(".q").forEach(el=>{ const q=c.quiz.find(x=>x.id===el.dataset.id); bindQ(el,q); });
+  // tokens
+  const exp=document.getElementById("tokexp");
+  content.querySelectorAll(".tok").forEach(t=>t.addEventListener("click",()=>{
+    content.querySelectorAll(".tok").forEach(x=>x.setAttribute("aria-pressed","false"));
+    t.setAttribute("aria-pressed","true");
+    if(exp) exp.textContent=t.dataset.e;
+  }));
+  // multiplicity explorer
+  const mC=document.getElementById("multC");
+  if(mC){
+    const tC=document.getElementById("mC"), tO=document.getElementById("mO"), me=document.getElementById("multexp");
+    mC.addEventListener("click",()=>{ tO.classList.add("hl"); tC.classList.remove("hl"); me.innerHTML="Nézd a <b>Customertől távolabbi</b> (Order felőli) véget: <b>0..*</b>. Egy vásárlónak nulla vagy több rendelése lehet."; });
+    document.getElementById("multO").addEventListener("click",()=>{ tC.classList.add("hl"); tO.classList.remove("hl"); me.innerHTML="Nézd az <b>Ordertől távolabbi</b> (Customer felőli) véget: <b>1</b>. Minden rendelés pontosan egy vásárlóhoz tartozik."; });
+  }
+  if(c.id==="jeloles-gyakorlo") drillNext();
+  renderNav(c.id);
+  window.scrollTo(0,0);
+}
+function route(){ const h=(location.hash||"").replace("#",""); show(CH.some(c=>c.id===h)?h:CH[0].id); }
+window.addEventListener("hashchange",route);
+document.getElementById("reset").addEventListener("click",()=>{ solved={}; save(); route(); });
+route();
+})();
+</script>
+</body>
+</html>
